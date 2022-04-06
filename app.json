@@ -1,0 +1,35 @@
+{
+  "expo": {
+    "name": "reddit-clone-typescript-blank",
+    "slug": "reddit-clone-typescript-blank",
+    "version": "1.0.3",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "updates": {
+      "fallbackToCacheTimeout": 0
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.gg.redditclonetypescriptblank"
+    },
+    "android": {
+      "versionCode": 3,
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#FFFFFF"
+      },
+      "package": "com.gg.redditclonetypescriptblank"
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    }
+  }
+}
