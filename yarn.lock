@@ -1627,10 +1627,10 @@
   dependencies:
     "@types/yargs-parser" "*"
 
-"@wxik/core@^0.5.3":
-  version "0.5.3"
-  resolved "https://registry.yarnpkg.com/@wxik/core/-/core-0.5.3.tgz#be73c25665d641452f5d671891c262c21370effb"
-  integrity sha512-YdzeuYf3KhiBNw0l2gnT/e4TDrNgx90l4iqNYqU4uXv3CQ1JVDUIhy6Lzdg2fT34Xpf99yk2eq4OrD8fAdsZnQ==
+"@wxik/core@^0.5.5":
+  version "0.5.5"
+  resolved "https://registry.yarnpkg.com/@wxik/core/-/core-0.5.5.tgz#8d77698fa236872329796666ed15b0a7cae3a236"
+  integrity sha512-2mL9yKMiY+yfS++0xGY/PFw5bDkqoGjobrkuiL+YBOourOw2GVKq2q1+7QVEIMShbYn9cunw4Fcpabp7et9yGA==
 
 "@xmldom/xmldom@~0.7.0":
   version "0.7.5"

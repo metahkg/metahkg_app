@@ -1,9 +1,9 @@
-import React from 'react'
-import { StyleSheet, Text, TouchableOpacity } from 'react-native'
-import { useTheme } from '@react-navigation/native'
+import React from "react";
+import { StyleSheet, Text, TouchableOpacity } from "react-native";
+import { useTheme } from "@react-navigation/native";
 
 const Button = ({ children, bgColor, title, ...props }) => {
-  const { colors } = useTheme()
+  const { colors } = useTheme();
 
   return (
     <TouchableOpacity
@@ -14,26 +14,26 @@ const Button = ({ children, bgColor, title, ...props }) => {
       {children}
       <Text style={[styles.buttonText, { color: colors.white }]}>{title}</Text>
     </TouchableOpacity>
-  )
-}
+  );
+};
 
 const styles = StyleSheet.create({
   button: {
     height: 50,
     margin: 10,
-    justifyContent: 'center',
+    justifyContent: "center",
     borderRadius: 999,
     flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    elevation: 4
+    flexDirection: "row",
+    alignItems: "center",
+    elevation: 4,
   },
   buttonText: {
-    fontWeight: 'bold',
+    fontWeight: "bold",
     fontSize: 18,
-    textAlign: 'center',
-    marginLeft: 10
-  }
-})
+    textAlign: "center",
+    marginLeft: 10,
+  },
+});
 
-export default Button
+export default Button;

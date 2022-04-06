@@ -1,5 +1,5 @@
-import * as React from 'react'
-import Svg, { Path } from 'react-native-svg'
+import * as React from "react";
+import Svg, { Path } from "react-native-svg";
 
 function SvgLogIn(props) {
   return (
@@ -17,7 +17,7 @@ function SvgLogIn(props) {
     >
       <Path d="M15 3h4a2 2 0 012 2v14a2 2 0 01-2 2h-4M10 17l5-5-5-5M15 12H3" />
     </Svg>
-  )
+  );
 }
 
-export default SvgLogIn
+export default SvgLogIn;

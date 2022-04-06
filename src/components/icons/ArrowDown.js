@@ -1,5 +1,5 @@
-import * as React from 'react'
-import Svg, { Path } from 'react-native-svg'
+import * as React from "react";
+import Svg, { Path } from "react-native-svg";
 
 function SvgArrowDown(props) {
   return (
@@ -17,7 +17,7 @@ function SvgArrowDown(props) {
     >
       <Path d="M12 5v14M19 12l-7 7-7-7" />
     </Svg>
-  )
+  );
 }
 
-export default SvgArrowDown
+export default SvgArrowDown;

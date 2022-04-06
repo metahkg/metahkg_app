@@ -1,5 +1,5 @@
-import * as React from 'react'
-import Svg, { Circle, Path } from 'react-native-svg'
+import * as React from "react";
+import Svg, { Circle, Path } from "react-native-svg";
 
 function SvgPlusCircle(props) {
   return (
@@ -18,7 +18,7 @@ function SvgPlusCircle(props) {
       <Circle cx={12} cy={12} r={10} />
       <Path d="M12 8v8M8 12h8" />
     </Svg>
-  )
+  );
 }
 
-export default SvgPlusCircle
+export default SvgPlusCircle;

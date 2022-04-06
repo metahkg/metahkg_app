@@ -1,5 +1,5 @@
-import * as React from 'react'
-import Svg, { Path } from 'react-native-svg'
+import * as React from "react";
+import Svg, { Path } from "react-native-svg";
 
 function SvgMessageSquare(props) {
   return (
@@ -17,7 +17,7 @@ function SvgMessageSquare(props) {
     >
       <Path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" />
     </Svg>
-  )
+  );
 }
 
-export default SvgMessageSquare
+export default SvgMessageSquare;

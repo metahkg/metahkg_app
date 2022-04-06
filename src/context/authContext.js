@@ -1,62 +1,64 @@
-import React from 'react'
+import React from "react";
 // import AsyncStorage from '@react-native-community/async-storage'
-import AsyncStorage from '@react-native-async-storage/async-storage'
-const AuthContext = React.createContext()
-const { Provider } = AuthContext
+import AsyncStorage from "@react-native-async-storage/async-storage";
+const AuthContext = React.createContext();
+const { Provider } = AuthContext;
 
 const AuthProvider = ({ children }) => {
-  const [authState, setAuthState] = React.useState({})
+  const [authState, setAuthState] = React.useState({});
 
   React.useEffect(() => {
     const bootstrapAsync = async () => {
-      let token, expiresAt, userInfo
+      let token, expiresAt, userInfo;
       try {
-        token = await AsyncStorage.getItem('token')
-        expiresAt = await AsyncStorage.getItem('expiresAt')
-        userInfo = await AsyncStorage.getItem('userInfo')
+        token = await AsyncStorage.getItem("token");
+        expiresAt = await AsyncStorage.getItem("expiresAt");
+        userInfo = await AsyncStorage.getItem("userInfo");
       } catch (e) {
-        console.log(e)
+        console.log(e);
       }
 
       if (new Date().getTime() / 1000 > JSON.parse(expiresAt)) {
-        signOut()
+        signOut();
       }
 
       setAuthState({
         token,
         expiresAt,
-        userInfo: userInfo ? JSON.parse(userInfo) : {}
-      })
-    }
+        userInfo: userInfo ? JSON.parse(userInfo) : {},
+      });
+    };
 
-    bootstrapAsync()
-  }, [])
+    bootstrapAsync();
+  }, []);
 
   const setStorage = async (token, expiresAt, userInfo) => {
     try {
-      await AsyncStorage.setItem('token', token)
-      await AsyncStorage.setItem('expiresAt', JSON.stringify(expiresAt))
-      await AsyncStorage.setItem('userInfo', JSON.stringify(userInfo))
+      await AsyncStorage.setItem("token", token);
+      await AsyncStorage.setItem("expiresAt", JSON.stringify(expiresAt));
+      await AsyncStorage.setItem("userInfo", JSON.stringify(userInfo));
     } catch (error) {
-      console.log(error)
+      console.log(error);
     }
 
-    setAuthState({ token, expiresAt, userInfo })
-  }
+    setAuthState({ token, expiresAt, userInfo });
+  };
 
   const signOut = async () => {
-    const keys = ['token', 'expiresAt', 'userInfo']
+    const keys = ["token", "expiresAt", "userInfo"];
 
     try {
-      await AsyncStorage.multiRemove(keys)
+      await AsyncStorage.multiRemove(keys);
     } catch (error) {
-      console.log(error)
+      console.log(error);
     }
 
-    setAuthState({ token: null, expiresAt: null, userInfo: {} })
-  }
+    setAuthState({ token: null, expiresAt: null, userInfo: {} });
+  };
 
-  return <Provider value={{ authState, setStorage, signOut }}>{children}</Provider>
-}
+  return (
+    <Provider value={{ authState, setStorage, signOut }}>{children}</Provider>
+  );
+};
 
-export { AuthContext, AuthProvider }
+export { AuthContext, AuthProvider };
