@@ -11,23 +11,24 @@ import CategoryPicker from "../components/CategoryPicker";
 import Post from "../components/Post";
 import PostLoader from "../components/PostLoader";
 import CategoryLoader from "../components/CategoryLoader";
+import customDefaultTheme from "../constants/default-theme";
 
 const Home = () => {
   const { authState } = React.useContext(AuthContext);
   const { theme } = React.useContext(ThemeContext);
   const { colors } = useTheme();
 
-  const [postData, setPostData] = React.useState(null);
+  const [postData, setPostData] = React.useState<any[]>([]);
   const [category, setCategory] = React.useState("all");
-  const [isLoading, setIsLoaading] = React.useState(false);
+  const [isLoading, setIsLoading] = React.useState(false);
 
   const getPostData = React.useCallback(async () => {
-    setIsLoaading(true);
+    setIsLoading(true);
     const { data } = await axios.get(
       !category || category === "all" ? "posts" : `posts/${category}`
     );
     setPostData(data);
-    setIsLoaading(false);
+    setIsLoading(false);
   }, [category]);
 
   React.useEffect(() => {
@@ -56,7 +57,7 @@ const Home = () => {
           }
           ListHeaderComponentStyle={[
             styles.categoryPicker,
-            { backgroundColor: colors.bgColor },
+            { backgroundColor: customDefaultTheme.colors.bgColor },
           ]}
           ListEmptyComponent={
             <Text style={[styles.empty, { color: colors.text }]}>
@@ -79,7 +80,7 @@ const Home = () => {
               url={item.url}
               votes={item.votes}
               views={item.views}
-              setIsLoaading={setIsLoaading}
+              setIsLoading={setIsLoading}
               setData={setPostData}
               deleteButton={false}
             />

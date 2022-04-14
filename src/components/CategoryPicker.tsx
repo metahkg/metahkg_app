@@ -9,16 +9,20 @@ import {
 import { useTheme } from "@react-navigation/native";
 
 import categories from "../constants/categories";
+import customDefaultTheme from "../constants/default-theme";
 
-const CategoryPicker = ({
-  selectedCategory,
-  onClick,
-  addAll,
-  setFieldValue,
-  ...props
+const CategoryPicker = (props: {
+  selectedCategory: string;
+  onClick?: (e: string) => void;
+  addAll?: boolean;
+  setFieldValue?: (
+    field: string,
+    value: any,
+    shouldValidate?: boolean | undefined
+  ) => void;
 }) => {
   const { colors } = useTheme();
-
+  const { selectedCategory, onClick, addAll, setFieldValue } = props;
   return (
     <View {...props}>
       <FlatList
@@ -28,7 +32,8 @@ const CategoryPicker = ({
         renderItem={({ item }) => (
           <TouchableOpacity
             onPress={() =>
-              onClick ? onClick(item) : setFieldValue("category", item)
+              (onClick && onClick(item)) ||
+              (setFieldValue && setFieldValue("category", item))
             }
           >
             <Text
@@ -37,8 +42,13 @@ const CategoryPicker = ({
                 {
                   fontWeight: item === selectedCategory ? "bold" : "normal",
                   borderBottomColor:
-                    item === selectedCategory ? colors.blue : "transparent",
-                  color: item === selectedCategory ? colors.blue : colors.text,
+                    item === selectedCategory
+                      ? customDefaultTheme.colors.blue
+                      : "transparent",
+                  color:
+                    item === selectedCategory
+                      ? customDefaultTheme.colors.blue
+                      : colors.text,
                 },
               ]}
             >

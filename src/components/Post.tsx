@@ -1,4 +1,4 @@
-import React from "react";
+import React, { SetStateAction } from "react";
 import {
   Linking,
   StyleSheet,
@@ -15,42 +15,63 @@ import { AuthContext } from "../context/authContext";
 
 import { ArrowDown, ArrowUp, MessageSquare, Trash } from "./icons/index";
 
-const Post = ({
-  index,
-  postId,
-  userId,
-  score,
-  type,
-  title,
-  author,
-  category,
-  text,
-  comments,
-  created,
-  url,
-  votes,
-  views,
-  setIsLoaading,
-  setData,
-  postType,
-  deleteButton,
-  deletePost,
+const Post = (props: {
+  index: number;
+  postId: number;
+  userId: number;
+  score: number;
+  type: string;
+  title: string;
+  author: string;
+  category: number;
+  text: string;
+  comments: string[];
+  created: string;
+  url: string;
+  votes: any[];
+  views: number;
+  setIsLoading: React.Dispatch<SetStateAction<boolean>>;
+  setData: React.Dispatch<SetStateAction<any[]>>;
+  postType?: string;
+  deleteButton?: any;
+  deletePost?: any;
 }) => {
+  const {
+    index,
+    postId,
+    userId,
+    score,
+    type,
+    title,
+    author,
+    category,
+    text,
+    comments,
+    created,
+    url,
+    votes,
+    views,
+    setIsLoading,
+    setData,
+    postType,
+    deleteButton,
+    deletePost,
+  } = props;
   const { colors } = useTheme();
   const navigation = useNavigation();
   const { authState } = React.useContext(AuthContext);
   const route = useRoute();
 
   const isUpVoted = () => {
-    return votes || votes.find((v) => v.user === userId)?.vote === 1;
+    return votes.find((v) => v.user === userId)?.vote === 1;
   };
 
   const isDownVoted = () => {
-    return votes || votes.find((v) => v.user === userId)?.vote === -1;
+    return votes.find((v) => v.user === userId)?.vote === -1;
   };
 
   const upVote = async () => {
-    setIsLoaading(true);
+    setIsLoading(true);
     const { data } = await axios.get(`post/${postId}/upvote`);
     if (postType !== "item") {
       setData((prevData) => {
@@ -74,11 +95,11 @@ const Post = ({
     } else {
       setData(data);
     }
-    setIsLoaading(false);
+    setIsLoading(false);
   };
 
   const unVote = async () => {
-    setIsLoaading(true);
+    setIsLoading(true);
     const { data } = await axios.get(`post/${postId}/unvote`);
     if (postType !== "item") {
       setData((prevData) => {
@@ -88,7 +109,7 @@ const Post = ({
     } else {
       setData(data);
     }
-    setIsLoaading(false);
+    setIsLoading(false);
   };
 
   return (

@@ -4,7 +4,7 @@ import React from "react";
 // import HeaderButton from '@Components/HeaderButton'
 // import t from '@Localize'
 
-import { Image, StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
 
 // import { Header } from 'react-native-elements'
 

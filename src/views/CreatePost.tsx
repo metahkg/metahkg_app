@@ -9,7 +9,6 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
 import { useTheme } from "@react-navigation/native";
 
 import axios from "../utils/fetcher";
@@ -18,12 +17,21 @@ import * as Yup from "yup";
 
 import { Plus } from "../components/icons";
 import CategoryPicker from "../components/CategoryPicker";
+import customDefaultTheme from "../constants/default-theme";
 
-const TypeSwichContainer = ({ children }) => {
+const TypeSwichContainer = (props: {
+  children: JSX.Element | JSX.Element[];
+}) => {
+  const { children } = props;
   return <View style={styles.typeContainer}>{children}</View>;
 };
 
-const TypeSwichButton = ({ selected, onClick, type }) => {
+const TypeSwichButton = (props: {
+  selected: any;
+  onClick: (field: string, value: string) => void;
+  type: "text" | "link";
+}) => {
+  const { selected, onClick, type } = props;
   const { colors } = useTheme();
 
   return (
@@ -31,7 +39,9 @@ const TypeSwichButton = ({ selected, onClick, type }) => {
       style={[
         styles.typeButton,
         type === "link" ? styles.typeButtonRight : styles.typeButtonLeft,
-        selected === type ? { backgroundColor: colors.blue } : "",
+        selected === type && {
+          backgroundColor: customDefaultTheme.colors.blue,
+        },
         { borderColor: colors.border },
       ]}
       onPress={() => onClick("type", type)}
@@ -41,7 +51,7 @@ const TypeSwichButton = ({ selected, onClick, type }) => {
           style={[
             styles.typeButtonLabel,
             { color: colors.text },
-            selected === type ? { color: "white" } : "",
+            selected === type && { color: "white" },
           ]}
         >
           {type}
@@ -54,7 +64,7 @@ const TypeSwichButton = ({ selected, onClick, type }) => {
 const CreatePost = () => {
   const { colors } = useTheme();
   const [isLoading, setIsLoading] = React.useState(false);
-  const [message, setMessage] = React.useState(null);
+  const [message, setMessage] = React.useState("");
   const fadeAnim = React.useRef(new Animated.Value(0)).current;
 
   const fadeIn = () => {
@@ -65,14 +75,17 @@ const CreatePost = () => {
     }).start();
 
     setTimeout(() => {
-      setMessage(null);
+      setMessage("");
     }, 6000);
   };
 
   return (
     <ScrollView
-      as={SafeAreaView}
-      style={[styles.container, { backgroundColor: colors.bgColor }]}
+      //as={SafeAreaView}
+      style={[
+        styles.container,
+        { backgroundColor: customDefaultTheme.colors.bgColor },
+      ]}
     >
       <Formik
         initialValues={{
@@ -86,10 +99,12 @@ const CreatePost = () => {
           setIsLoading(true);
           try {
             await axios.post("posts", values);
+            // @ts-ignore
             resetForm({ ...values, type: "text" });
             setMessage("Successfully Created!");
             fadeIn();
           } catch (error) {
+            // @ts-ignore
             setStatus(error.response.data.message);
           }
           setIsLoading(false);
@@ -178,7 +193,9 @@ const CreatePost = () => {
               style={[
                 styles.textInput,
                 { borderColor: colors.border, color: colors.text, height: 40 },
-                touched.title && errors.title && { borderColor: colors.red },
+                Boolean(touched.title && errors.title) && {
+                  borderColor: customDefaultTheme.colors.red,
+                },
               ]}
               value={values.title}
               onChangeText={handleChange("title")}
@@ -199,7 +216,9 @@ const CreatePost = () => {
                   style={[
                     styles.textInput,
                     { borderColor: colors.border, color: colors.text },
-                    touched.url && errors.url && { borderColor: colors.red },
+                    Boolean(touched.url && errors.url) && {
+                      borderColor: customDefaultTheme.colors.red,
+                    },
                   ]}
                   multiline
                   value={values.url}
@@ -221,7 +240,9 @@ const CreatePost = () => {
                   style={[
                     styles.textInput,
                     { borderColor: colors.border, color: colors.text },
-                    touched.text && errors.text && { borderColor: colors.red },
+                    Boolean(touched.text && errors.text) && {
+                      borderColor: customDefaultTheme.colors.red,
+                    },
                   ]}
                   multiline
                   value={values.text}
@@ -232,8 +253,13 @@ const CreatePost = () => {
             )}
             <View style={styles.buttonContainer}>
               <TouchableOpacity
-                style={[styles.submitButton, { backgroundColor: colors.blue }]}
-                onPress={handleSubmit}
+                style={[
+                  styles.submitButton,
+                  { backgroundColor: customDefaultTheme.colors.blue },
+                ]}
+                onPress={() => {
+                  handleSubmit();
+                }}
               >
                 {isLoading ? (
                   <ActivityIndicator size="small" color="white" />
