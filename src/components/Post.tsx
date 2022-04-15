@@ -14,9 +14,10 @@ import axios from "../utils/fetcher";
 import { AuthContext } from "../context/authContext";
 
 import { ArrowDown, ArrowUp, MessageSquare, Trash } from "./icons/index";
+import { postType } from "../types/post";
 
 const Post = (props: {
-  index: number;
+  index?: number;
   postId: number;
   userId: number;
   score: number;
@@ -26,12 +27,12 @@ const Post = (props: {
   category: number;
   text: string;
   comments: string[];
-  created: string;
+  created: number;
   url: string;
   votes: any[];
   views: number;
   setIsLoading: React.Dispatch<SetStateAction<boolean>>;
-  setData: React.Dispatch<SetStateAction<any[]>>;
+  setData: React.Dispatch<SetStateAction<postType | null>>;
   postType?: string;
   deleteButton?: any;
   deletePost?: any;
@@ -75,17 +76,19 @@ const Post = (props: {
     const { data } = await axios.get(`post/${postId}/upvote`);
     if (postType !== "item") {
       setData((prevData) => {
-        prevData[index] = data;
+        if (prevData) {
+          prevData[index] = data;
+        }
         return prevData;
       });
     } else {
       setData(data);
     }
-    setIsLoaading(false);
+    setIsLoading(false);
   };
 
   const downVote = async () => {
-    setIsLoaading(true);
+    setIsLoading(true);
     const { data } = await axios.get(`post/${postId}/downvote`);
     if (postType !== "item") {
       setData((prevData) => {

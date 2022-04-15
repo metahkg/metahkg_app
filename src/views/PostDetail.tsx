@@ -10,13 +10,15 @@ import CommentListItem from "../components/CommentListItem";
 import CreateComment from "../components/CreateComment";
 import CommentLoader from "../components/CommentLoader";
 import PostLoader from "../components/PostLoader";
+import { postType } from "../types/post";
 
-const PostDetail = ({ route, navigation }) => {
+const PostDetail = (props: { route: any; navigation: any }) => {
+  const { route, navigation } = props;
   const { authState } = React.useContext(AuthContext);
-  const flatListRef = React.useRef();
+  const flatListRef = React.useRef<FlatList>(null);
 
-  const [post, setPost] = React.useState(null);
-  const [isLoading, setIsLoaading] = React.useState(false);
+  const [post, setPost] = React.useState<null | postType>(null);
+  const [isLoading, setIsLoading] = React.useState(false);
   const [comment, setComment] = React.useState("");
   const [isFocused, setIsFocused] = React.useState(null);
 
@@ -24,11 +26,11 @@ const PostDetail = ({ route, navigation }) => {
   const { comments } = route.params;
 
   const getPostData = React.useCallback(async () => {
-    setIsLoaading(true);
+    setIsLoading(true);
     const { data } = await axios.get(`post/${postId}`);
     setPost(data);
     // console.log("the postsssss are ", data)
-    setIsLoaading(false);
+    setIsLoading(false);
   }, [postId]);
 
   React.useEffect(() => {
@@ -37,6 +39,7 @@ const PostDetail = ({ route, navigation }) => {
 
   React.useEffect(() => {
     isFocused &&
+      flatListRef.current &&
       flatListRef.current.scrollToOffset({ animated: true, offset: 0 });
   }, [isFocused]);
 
@@ -48,20 +51,20 @@ const PostDetail = ({ route, navigation }) => {
     setComment("");
   };
 
-  const deleteComment = async (commentId) => {
-    setIsLoaading(true);
+  const deleteComment = async (commentId: any) => {
+    setIsLoading(true);
     const { data } = await axios.delete(`/post/${postId}/${commentId}`);
     setPost(data);
-    setIsLoaading(false);
+    setIsLoading(false);
   };
 
-  const deletePost = async (postId) => {
-    setIsLoaading(true);
+  const deletePost = async (postId: any) => {
+    setIsLoading(true);
     const { status } = await axios.delete(`post/${postId}`);
     if (status === 200) {
       navigation.push("Home");
     }
-    setIsLoaading(false);
+    setIsLoading(false);
   };
 
   return (
@@ -70,7 +73,10 @@ const PostDetail = ({ route, navigation }) => {
         <>
           <FlatList
             ref={flatListRef}
-            data={post.comments.sort((a, b) => a.created < b.created)}
+            data={post.comments.sort(
+              (a: { created: number }, b: { created: number }) =>
+                a.created - b.created
+            )}
             refreshing={isLoading}
             onRefresh={() => getPostData()}
             keyExtractor={(item) => item.id}
@@ -89,7 +95,7 @@ const PostDetail = ({ route, navigation }) => {
                 url={post.url}
                 votes={post.votes}
                 views={post.views}
-                setIsLoaading={setIsLoaading}
+                setIsLoading={setIsLoading}
                 setData={setPost}
                 postType="item"
                 deleteButton={true}
@@ -122,7 +128,7 @@ const PostDetail = ({ route, navigation }) => {
       ) : (
         <>
           <PostLoader />
-          {comments.map((i) => (
+          {comments.map((i: { id: React.Key | null | undefined }) => (
             <CommentLoader key={i.id} />
           ))}
         </>
