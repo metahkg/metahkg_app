@@ -138,7 +138,7 @@ const CreatePost = () => {
           setFieldValue,
         }) => (
           <View>
-            {message && (
+            {!!message && (
               <Animated.View
                 style={{
                   opacity: fadeAnim,

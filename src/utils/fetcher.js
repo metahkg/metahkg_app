@@ -4,7 +4,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const instanceAxios = axios.create({
   // baseURL: 'https://intense-shore-46981.herokuapp.com/api/',
-  baseURL: "https://2e52-175-159-124-174.ngrok.io/api",
+  baseURL: "https://0d69-185-225-234-22.ngrok.io/api",
 });
 
 instanceAxios.interceptors.request.use(
