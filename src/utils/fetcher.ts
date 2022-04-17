@@ -4,14 +4,16 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const instanceAxios = axios.create({
   // baseURL: 'https://intense-shore-46981.herokuapp.com/api/',
-  baseURL: "https://0d69-185-225-234-22.ngrok.io/api",
+  baseURL: "http://85fc-185-225-234-36.ngrok.io/api",
 });
 
 instanceAxios.interceptors.request.use(
   async (config) => {
-    const token = await AsyncStorage.getItem("token");
-    config.headers.Authorization = `Bearer ${token}`;
-    return config;
+    if (config.headers) {
+      const token = await AsyncStorage.getItem("token");
+      config.headers.Authorization = `Bearer ${token}`;
+      return config;
+    }
   },
   (error) => {
     return Promise.reject(error);

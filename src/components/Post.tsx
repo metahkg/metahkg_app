@@ -17,7 +17,7 @@ import { ArrowDown, ArrowUp, MessageSquare, Trash } from "./icons/index";
 import { postType } from "../types/post";
 
 const Post = (props: {
-  index: number;
+  index?: number;
   postId: number;
   userId: number;
   score: number;
@@ -54,7 +54,6 @@ const Post = (props: {
     views,
     setIsLoading,
     setData,
-    postType,
     deleteButton,
     deletePost,
   } = props;
@@ -74,39 +73,32 @@ const Post = (props: {
   const upVote = async () => {
     setIsLoading(true);
     const { data } = await axios.get(`post/${postId}/upvote`);
-    if (postType !== "item") {
-      setData((prevData) => prevData && { ...prevData, [index]: data });
-    } else {
-      setData(data);
-    }
+    setData((prevData) => {
+      if (prevData) {
+        prevData[index] = data;
+      }
+      return prevData;
+    });
     setIsLoading(false);
   };
 
   const downVote = async () => {
     setIsLoading(true);
     const { data } = await axios.get(`post/${postId}/downvote`);
-    if (postType !== "item") {
-      setData((prevData) => {
-        prevData[index] = data;
-        return prevData;
-      });
-    } else {
-      setData(data);
-    }
+    setData((prevData) => {
+      prevData[index] = data;
+      return prevData;
+    });
     setIsLoading(false);
   };
 
   const unVote = async () => {
     setIsLoading(true);
     const { data } = await axios.get(`post/${postId}/unvote`);
-    if (postType !== "item") {
-      setData((prevData) => {
-        prevData[index] = data;
-        return prevData;
-      });
-    } else {
-      setData(data);
-    }
+    setData((prevData) => {
+      prevData[index] = data;
+      return prevData;
+    });
     setIsLoading(false);
   };
 

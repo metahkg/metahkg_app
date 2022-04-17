@@ -10,11 +10,13 @@ import { Example } from "./TextEditorArea/TextEditor";
 import { ThemeContext } from "../context/themeSwichContext";
 import { ContentContext } from "../context/contentChangeContext";
 import axios from "../utils/fetcher";
+import Tinymce from "./Tinymce";
 // import {RichEditor} from "react-native-pell-rich-editor";
 // import {RichEditor} from "react-native-pell-rich-editor";
-const Reply = ({ navigation, route }) =>
+const Reply = (props: { navigation: any; route: any }) =>
   // { children, bgColor, title, ...props }
   {
+    const { navigation, route } = props;
     const { colors } = useTheme();
     const { content, changecontent } = React.useContext(ContentContext);
     const { theme, changeTheme } = React.useContext(ThemeContext);
@@ -26,12 +28,15 @@ const Reply = ({ navigation, route }) =>
       theme,
       "route,route"
     );
-    const createComment = async (comment) => {
+    const createComment = (comment: any) => {
       console.log("create comment called");
-      const { data } = await axios.post(`/post/${route.params.postId}`, {
-        comment,
-      });
-      console.log("comment created");
+      axios
+        .post(`/post/${route.params.postId}`, {
+          comment,
+        })
+        .then(() => {
+          console.log("comment created");
+        });
 
       // setPost(data)
       // setComment('')
@@ -78,6 +83,7 @@ const Reply = ({ navigation, route }) =>
             Text With Only Right Border{" "}
           </Text>
         </View>
+        {/*<Tinymce />*/}
         <Example theme={theme} navigation={navigation} />
         {/*<TextEditor/>*/}
 

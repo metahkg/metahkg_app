@@ -22,6 +22,7 @@ export default function useCachedResources() {
           'OpenSans-SemiBold': require('../../assets/fonts/OpenSans-SemiBold.ttf'),
           'OpenSans-Italic': require('../../assets/fonts/OpenSans-Italic.ttf'),
           'OpenSans-ExtraBold':require('../../assets/fonts/OpenSans-ExtraBold.ttf'),
+          'Menlo': require('../../assets/fonts/Menlo-Regular.ttf'),
         });
       } catch (e) {
         // We might want to provide this error information to an error reporting service
