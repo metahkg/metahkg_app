@@ -3,8 +3,8 @@ import React from "react";
 import { Button, StyleSheet, View, SafeAreaView } from "react-native";
 import { WebView } from "react-native-webview";
 
-type Props = {};
-type State = {};
+type Props = any;
+type State = any;
 
 export class Preview extends React.Component<Props, State> {
   // onHome = () => {

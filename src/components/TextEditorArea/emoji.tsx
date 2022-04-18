@@ -5,7 +5,7 @@
 import React from "react";
 import { View, Text, StyleSheet, Dimensions } from "react-native";
 
-export function EmojiView(props) {
+export function EmojiView(props: { onSelect: (emoji: string) => void }) {
   const { onSelect } = props;
   return (
     <View style={styles.view}>

@@ -59,7 +59,7 @@ const initHTML = `<br/>
 const phizIcon = require("./assets/phiz.png");
 const htmlIcon = require("./assets/html.png");
 
-function createContentStyle(theme) {
+function createContentStyle(theme: "light" | "dark") {
   // Can be selected for more situations (cssText or contentCSSText).
   const contentStyle = {
     backgroundColor: "#2e3847",
@@ -77,13 +77,13 @@ function createContentStyle(theme) {
   return contentStyle;
 }
 
-export function Example(props) {
+export function Example(props: { theme?: any; navigation: any }) {
   const { content, changecontent } = React.useContext(ContentContext);
 
   let { theme: initTheme = Appearance.getColorScheme(), navigation } = props;
-  let richText = useRef();
-  let linkModal = useRef();
-  let scrollRef = useRef();
+  let richText = useRef<any>(null);
+  let linkModal = useRef<any>(null);
+  let scrollRef = useRef<any>();
   // save on html
   let contentRef = useRef(initHTML);
 
@@ -96,6 +96,7 @@ export function Example(props) {
   let handleSave = useCallback(() => {
     navigation.push("preview", {
       html: contentRef.current,
+      // @ts-ignore
       css: getContentCSS(),
     });
   }, []);
@@ -128,9 +129,11 @@ export function Example(props) {
   }, [disabled]);
 
   let editorInitializedCallback = useCallback(() => {
-    richText.current.registerToolbar(function (items) {
-      // console.log('Toolbar click, selected items (insert end callback):', items);
-    });
+    /*richText.current &&
+      // @ts-ignore
+      richText.current?.registerToolbar(function (items) {
+        // console.log('Toolbar click, selected items (insert end callback):', items);
+      });*/
   }, []);
 
   let onKeyHide = useCallback(() => {}, []);
@@ -262,8 +265,8 @@ export function Example(props) {
   useEffect(() => {
     let listener = [
       Appearance.addChangeListener(themeChange),
-      Keyboard.addListener("keyboardDidShow", this.onKeyShow),
-      Keyboard.addListener("keyboardDidHide", this.onKeyHide),
+      Keyboard.addListener("keyboardDidShow", onKeyShow),
+      Keyboard.addListener("keyboardDidHide", onKeyHide),
     ];
     return () => {
       console.log("giving up removing listener");
@@ -424,6 +427,7 @@ export function Example(props) {
             ),
             insertHTML: htmlIcon,
           }}
+          // @ts-ignore
           insertEmoji={handleEmoji}
           insertHTML={handleInsertHTML}
           insertVideo={handleInsertVideo}
