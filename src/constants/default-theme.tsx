@@ -1,4 +1,21 @@
-import { DefaultTheme } from "@react-navigation/native";
+import { DefaultTheme, Theme } from "@react-navigation/native";
+
+export type customTheme = {
+  colors: {
+    blue: string;
+    text: string;
+    border: string;
+    green: string;
+    red: string;
+    white: string;
+    bgColor: string;
+    signUpButton: string;
+    signInButton: string;
+    icon: string;
+    loader: string;
+    postBorder: string;
+  };
+} & Theme;
 
 const customDefaultTheme = {
   ...DefaultTheme,

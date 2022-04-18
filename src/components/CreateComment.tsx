@@ -1,23 +1,17 @@
 import React, { SetStateAction, useRef } from "react";
-import {
-  StyleSheet,
-  TextInput,
-  TouchableOpacity,
-  View,
-} from "react-native";
-import { useTheme } from "@react-navigation/native";
-
+import { StyleSheet, TextInput, TouchableOpacity, View } from "react-native";
 import { Send } from "./icons";
-import customDefaultTheme from "../constants/default-theme";
+import { customTheme } from "../constants/default-theme";
+import { useTheme } from "@react-navigation/native";
 
 const CreateComment = (props: {
   onPress: () => void;
-  setComment: () => void;
-  comment: string; 
+  setComment: React.Dispatch<SetStateAction<string>>;
+  comment: string;
   setIsFocused?: React.Dispatch<SetStateAction<boolean>>;
 }) => {
-  const {onPress, setComment, comment, setIsFocused} = props;
-  const { colors } = customDefaultTheme;
+  const { onPress, setComment, comment, setIsFocused } = props;
+  const { colors } = useTheme() as customTheme;
   const textInputRef = useRef<TextInput>(null);
 
   return (
@@ -34,9 +28,13 @@ const CreateComment = (props: {
         ref={textInputRef}
         placeholder="内文"
         placeholderTextColor={colors.text}
-        onFocus={() => { setIsFocused && setIsFocused(true)}}
-        onBlur={() => {setIsFocused && setIsFocused(false)}}
-        onChangeText={(setComment)}
+        onFocus={() => {
+          setIsFocused && setIsFocused(true);
+        }}
+        onBlur={() => {
+          setIsFocused && setIsFocused(false);
+        }}
+        onChangeText={setComment}
         maxLength={2000}
         autoCorrect={false}
         value={comment}

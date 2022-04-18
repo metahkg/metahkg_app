@@ -11,14 +11,15 @@ import CategoryPicker from "../components/CategoryPicker";
 import Post from "../components/Post";
 import PostLoader from "../components/PostLoader";
 import CategoryLoader from "../components/CategoryLoader";
-import customDefaultTheme from "../constants/default-theme";
+import customDefaultTheme, { customTheme } from "../constants/default-theme";
+import { postType } from "../types/post";
 
 const Home = () => {
   const { authState } = React.useContext(AuthContext);
   const { theme } = React.useContext(ThemeContext);
-  const { colors } = useTheme();
+  const { colors } = useTheme() as customTheme;
 
-  const [postData, setPostData] = React.useState<any[]>([]);
+  const [postData, setPostData] = React.useState<postType | null>(null);
   const [category, setCategory] = React.useState("all");
   const [isLoading, setIsLoading] = React.useState(false);
 
@@ -36,13 +37,14 @@ const Home = () => {
   }, [getPostData]);
 
   return (
-    <View as={SafeAreaView} style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <StatusBar
         barStyle={theme === "light" ? "dark-content" : "light-content"}
         backgroundColor={colors.background}
       />
       {postData ? (
         <FlatList
+          /*@ts-ignore*/
           data={postData}
           extraData={isLoading}
           refreshing={isLoading}
@@ -57,7 +59,7 @@ const Home = () => {
           }
           ListHeaderComponentStyle={[
             styles.categoryPicker,
-            { backgroundColor: customDefaultTheme.colors.bgColor },
+            { backgroundColor: colors.bgColor },
           ]}
           ListEmptyComponent={
             <Text style={[styles.empty, { color: colors.text }]}>
@@ -66,7 +68,6 @@ const Home = () => {
           }
           renderItem={({ item, index }) => (
             <Post
-              index={index}
               postId={item.id}
               userId={authState.userInfo.id}
               score={item.score}
@@ -94,7 +95,7 @@ const Home = () => {
           ))}
         </>
       )}
-    </View>
+    </SafeAreaView>
   );
 };
 

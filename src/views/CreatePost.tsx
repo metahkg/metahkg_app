@@ -17,7 +17,7 @@ import * as Yup from "yup";
 
 import { Plus } from "../components/icons";
 import CategoryPicker from "../components/CategoryPicker";
-import customDefaultTheme from "../constants/default-theme";
+import { customTheme } from "../constants/default-theme";
 
 const TypeSwichContainer = (props: {
   children: JSX.Element | JSX.Element[];
@@ -32,7 +32,7 @@ const TypeSwichButton = (props: {
   type: "text" | "link";
 }) => {
   const { selected, onClick, type } = props;
-  const { colors } = useTheme();
+  const { colors } = useTheme() as customTheme;
 
   return (
     <TouchableOpacity
@@ -40,7 +40,7 @@ const TypeSwichButton = (props: {
         styles.typeButton,
         type === "link" ? styles.typeButtonRight : styles.typeButtonLeft,
         selected === type && {
-          backgroundColor: customDefaultTheme.colors.blue,
+          backgroundColor: colors.blue,
         },
         { borderColor: colors.border },
       ]}
@@ -62,7 +62,7 @@ const TypeSwichButton = (props: {
 };
 
 const CreatePost = () => {
-  const { colors } = useTheme();
+  const { colors } = useTheme() as customTheme;
   const [isLoading, setIsLoading] = React.useState(false);
   const [message, setMessage] = React.useState("");
   const fadeAnim = React.useRef(new Animated.Value(0)).current;
@@ -82,10 +82,7 @@ const CreatePost = () => {
   return (
     <ScrollView
       //as={SafeAreaView}
-      style={[
-        styles.container,
-        { backgroundColor: customDefaultTheme.colors.bgColor },
-      ]}
+      style={[styles.container, { backgroundColor: colors.bgColor }]}
     >
       <Formik
         initialValues={{
@@ -194,7 +191,7 @@ const CreatePost = () => {
                 styles.textInput,
                 { borderColor: colors.border, color: colors.text, height: 40 },
                 Boolean(touched.title && errors.title) && {
-                  borderColor: customDefaultTheme.colors.red,
+                  borderColor: colors.red,
                 },
               ]}
               value={values.title}
@@ -217,7 +214,7 @@ const CreatePost = () => {
                     styles.textInput,
                     { borderColor: colors.border, color: colors.text },
                     Boolean(touched.url && errors.url) && {
-                      borderColor: customDefaultTheme.colors.red,
+                      borderColor: colors.red,
                     },
                   ]}
                   multiline
@@ -241,7 +238,7 @@ const CreatePost = () => {
                     styles.textInput,
                     { borderColor: colors.border, color: colors.text },
                     Boolean(touched.text && errors.text) && {
-                      borderColor: customDefaultTheme.colors.red,
+                      borderColor: colors.red,
                     },
                   ]}
                   multiline
@@ -253,10 +250,7 @@ const CreatePost = () => {
             )}
             <View style={styles.buttonContainer}>
               <TouchableOpacity
-                style={[
-                  styles.submitButton,
-                  { backgroundColor: customDefaultTheme.colors.blue },
-                ]}
+                style={[styles.submitButton, { backgroundColor: colors.blue }]}
                 onPress={() => {
                   handleSubmit();
                 }}

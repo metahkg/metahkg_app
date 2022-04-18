@@ -10,7 +10,7 @@ import CommentListItem from "../components/CommentListItem";
 import CreateComment from "../components/CreateComment";
 import CommentLoader from "../components/CommentLoader";
 import PostLoader from "../components/PostLoader";
-import { postType } from "../types/post";
+import { commentType, postType } from "../types/post";
 
 const PostDetail = (props: { route: any; navigation: any }) => {
   const { route, navigation } = props;
@@ -20,7 +20,7 @@ const PostDetail = (props: { route: any; navigation: any }) => {
   const [post, setPost] = React.useState<null | postType>(null);
   const [isLoading, setIsLoading] = React.useState(false);
   const [comment, setComment] = React.useState("");
-  const [isFocused, setIsFocused] = React.useState(null);
+  const [isFocused, setIsFocused] = React.useState(false);
 
   const { postId } = route.params;
   const { comments } = route.params;
@@ -68,7 +68,7 @@ const PostDetail = (props: { route: any; navigation: any }) => {
   };
 
   return (
-    <View as={SafeAreaView} style={styles.container}>
+    <SafeAreaView style={styles.container}>
       {post ? (
         <>
           <FlatList
@@ -133,7 +133,7 @@ const PostDetail = (props: { route: any; navigation: any }) => {
           ))}
         </>
       )}
-    </View>
+    </SafeAreaView>
   );
 };
 

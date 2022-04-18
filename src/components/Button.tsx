@@ -1,13 +1,20 @@
+import { useTheme } from "@react-navigation/native";
 import React from "react";
 import { StyleSheet, Text, TouchableOpacity } from "react-native";
-import { useTheme } from "@react-navigation/native";
+import { customTheme } from "../constants/default-theme";
 
-const Button = ({ children, bgColor, title, ...props }) => {
-  const { colors } = useTheme();
+const Button = (props: {
+  children: JSX.Element | JSX.Element[];
+  bgColor: string;
+  title: string;
+  customProps: any[];
+}) => {
+  const { children, bgColor, title, customProps } = props;
+  const { colors } = useTheme() as customTheme;
 
   return (
     <TouchableOpacity
-      {...props}
+      {...customProps}
       style={[styles.button, { backgroundColor: bgColor }]}
       activeOpacity={0.8}
     >

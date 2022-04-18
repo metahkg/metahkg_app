@@ -1,34 +1,29 @@
 import React from "react";
-import {
-  Linking,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { useNavigation, useTheme } from "@react-navigation/native";
 
 import moment from "moment";
-
-import { AuthContext } from "../context/authContext";
 
 import { ArrowDown, ArrowUp, MessageSquare } from "./icons";
 import { SafeAreaView } from "react-native-safe-area-context";
 import axios from "../utils/fetcher";
 import { WebView } from "react-native-webview";
+import { customTheme } from "../constants/default-theme";
+import { authorType, commentType, postType } from "../types/post";
 
-const CommentListItem = ({
-  index,
-  body,
-  author,
-  created,
-  wholeitem,
-  postId,
-  userId,
-  deleteComment,
+const CommentListItem = (props: {
+  index: number;
+  body: string;
+  author: authorType;
+  created: number;
+  wholeitem: commentType;
+  postId: number;
+  userId: number;
+  deleteComment?: () => void;
 }) => {
-  const { colors } = useTheme();
-  const { authState } = React.useContext(AuthContext);
+  const { index, body, author, created, wholeitem, postId, userId } = props;
+  const { colors } = useTheme() as customTheme;
+  //const { authState } = React.useContext(AuthContext);
   const [score, setscore] = React.useState(wholeitem.score);
 
   let votes = wholeitem.votes;
@@ -37,8 +32,6 @@ const CommentListItem = ({
   let temp2 = votes.find((v) => v.user === userId)?.vote === -1;
   const [isDownVoted, setisDownVoted] = React.useState(temp2);
   console.log("rendering one comment ", body);
-  let route = { name: "PostDetail", params: { postId: 123 } };
-  let type = "text";
   let text = body;
   let comments = [];
   const navigation = useNavigation();
@@ -72,13 +65,15 @@ break-all; word-wrap: break-word;overflow-x: auto;}
   const upVote = async () => {
     console.log("upvoted, ", postId, commentId);
     // setIsLoaading(true)
-    const { data } = await axios.get(`post/${postId}/${commentId}/upvote`);
+    const { data }: { data: postType } = await axios.get(
+      `post/${postId}/${commentId}/upvote`
+    );
     if (data) {
       console.log("ddddd", data);
-      let newscore = data.comments.find((c) => c.id === commentId).score;
+      let newscore = data.comments.find((c) => c.id === commentId)?.score || 0;
       setscore(newscore);
-      setisUpVoted(1);
-      setisDownVoted(0);
+      setisUpVoted(true);
+      setisDownVoted(false);
       // score=data.find()
       //update the vote
     }
@@ -86,13 +81,15 @@ break-all; word-wrap: break-word;overflow-x: auto;}
 
   const downVote = async () => {
     // setIsLoaading(true)
-    const { data } = await axios.get(`post/${postId}/${commentId}/downvote`);
+    const { data }: { data: postType } = await axios.get(
+      `post/${postId}/${commentId}/downvote`
+    );
     if (data) {
       console.log("ddddd", data);
-      let newscore = data.comments.find((c) => c.id === commentId).score;
+      let newscore = data.comments.find((c) => c.id === commentId)?.score || 0;
       setscore(newscore);
-      setisUpVoted(0);
-      setisDownVoted(1);
+      setisUpVoted(true);
+      setisDownVoted(false);
       // score=data.find()
       //update the vote
     }
@@ -100,19 +97,20 @@ break-all; word-wrap: break-word;overflow-x: auto;}
 
   const unVote = async () => {
     // setIsLoaading(true)
-    const { data } = await axios.get(`post/${postId}/${commentId}/unvote`);
+    const { data }: { data: postType } = await axios.get(
+      `post/${postId}/${commentId}/unvote`
+    );
     if (data) {
       console.log("ddddd", data);
-      let newscore = data.comments.find((c) => c.id === commentId).score;
+      let newscore = data.comments.find((c) => c.id === commentId)?.score || 0;
       setscore(newscore);
-      setisUpVoted(0);
-      setisDownVoted(0);
+      setisUpVoted(true);
+      setisDownVoted(false);
     }
   };
 
   return (
-    <View
-      as={SafeAreaView}
+    <SafeAreaView
       style={[
         styles.container,
         { backgroundColor: colors.bgColor, borderColor: colors.postBorder },
@@ -231,7 +229,7 @@ break-all; word-wrap: break-word;overflow-x: auto;}
           </Text>
         </TouchableOpacity>
       </View>
-    </View>
+    </SafeAreaView>
   );
 };
 

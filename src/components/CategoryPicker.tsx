@@ -9,7 +9,7 @@ import {
 import { useTheme } from "@react-navigation/native";
 
 import categories from "../constants/categories";
-import customDefaultTheme from "../constants/default-theme";
+import { customTheme } from "../constants/default-theme";
 
 const CategoryPicker = (props: {
   selectedCategory: string;
@@ -21,7 +21,7 @@ const CategoryPicker = (props: {
     shouldValidate?: boolean | undefined
   ) => void;
 }) => {
-  const { colors } = useTheme();
+  const { colors } = useTheme() as customTheme;
   const { selectedCategory, onClick, addAll, setFieldValue } = props;
   return (
     <View {...props}>
@@ -43,11 +43,11 @@ const CategoryPicker = (props: {
                   fontWeight: item === selectedCategory ? "bold" : "normal",
                   borderBottomColor:
                     item === selectedCategory
-                      ? customDefaultTheme.colors.blue
+                      ? colors.blue
                       : "transparent",
                   color:
                     item === selectedCategory
-                      ? customDefaultTheme.colors.blue
+                      ? colors.blue
                       : colors.text,
                 },
               ]}

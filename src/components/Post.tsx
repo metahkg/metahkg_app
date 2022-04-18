@@ -14,8 +14,8 @@ import axios from "../utils/fetcher";
 import { AuthContext } from "../context/authContext";
 
 import { ArrowDown, ArrowUp, MessageSquare, Trash } from "./icons/index";
-import { postType } from "../types/post";
-import customDefaultTheme from "../constants/default-theme";
+import { authorType, commentType, postType } from "../types/post";
+import { customTheme } from "../constants/default-theme";
 
 const Post = (props: {
   postId: number;
@@ -23,10 +23,10 @@ const Post = (props: {
   score: number;
   type: string;
   title: string;
-  author: { username: string; id: number };
+  author: authorType;
   category: number;
   text: string;
-  comments: string[];
+  comments: commentType[];
   created: number;
   url: string;
   votes: any[];
@@ -56,7 +56,7 @@ const Post = (props: {
     deleteButton,
     deletePost,
   } = props;
-  const { colors } = customDefaultTheme;
+  const { colors } = useTheme() as customTheme;
   const navigation = useNavigation();
   const { authState } = React.useContext(AuthContext);
   const route = useRoute();
@@ -91,8 +91,7 @@ const Post = (props: {
   };
 
   return (
-    <View
-      as={SafeAreaView}
+    <SafeAreaView
       style={[
         styles.container,
         { backgroundColor: colors.bgColor, borderColor: colors.postBorder },
@@ -198,7 +197,7 @@ const Post = (props: {
           {views} views
         </Text>
       </View>
-    </View>
+    </SafeAreaView>
   );
 };
 

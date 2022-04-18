@@ -3,9 +3,10 @@ import { StyleSheet, View } from "react-native";
 import { useTheme } from "@react-navigation/native";
 
 import TextLoader from "./TextLoader";
+import { customTheme } from "../constants/default-theme";
 
 const CommentLoader = ({ ...props }) => {
-  const { colors } = useTheme();
+  const { colors } = useTheme() as customTheme;
 
   return (
     <View

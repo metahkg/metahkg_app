@@ -1,11 +1,12 @@
 import React from "react";
 import { View, StyleSheet } from "react-native";
-import { useTheme } from "@react-navigation/native";
 
 import TextLoader from "./TextLoader";
+import { customTheme } from "../constants/default-theme";
+import { useTheme } from "@react-navigation/native";
 
 const CategoryLoader = () => {
-  const { colors } = useTheme();
+  const { colors } = useTheme() as customTheme;
 
   return (
     <View style={[styles.loader, { backgroundColor: colors.bgColor }]}>

@@ -1,16 +1,12 @@
 import React from "react";
 import { Text, TouchableOpacity, View } from "react-native";
 import { useTheme } from "@react-navigation/native";
-import CreateComment from "./CreateComment";
-import NewCreateComment from "./NewCreateComment";
-
-import { Button, Image } from "react-native";
 import { Send } from "./icons";
 import { Example } from "./TextEditorArea/TextEditor";
 import { ThemeContext } from "../context/themeSwichContext";
 import { ContentContext } from "../context/contentChangeContext";
 import axios from "../utils/fetcher";
-import Tinymce from "./Tinymce";
+// import Tinymce from "./Tinymce";
 // import {RichEditor} from "react-native-pell-rich-editor";
 // import {RichEditor} from "react-native-pell-rich-editor";
 const Reply = (props: { navigation: any; route: any }) =>
