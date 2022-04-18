@@ -16,11 +16,14 @@ import { ThemeContext } from "../context/themeSwichContext";
 import { LogOut, Moon, Sun } from "../components/icons";
 import Post from "../components/Post";
 import PostLoader from "../components/PostLoader";
+import { customTheme } from "../constants/default-theme";
+import { postType } from "../types/post";
 
-const HeaderComponent = ({ username, postCount }) => {
+const HeaderComponent = (props: { username: string; postCount: number }) => {
+  const { username, postCount } = props;
   const { signOut, authState } = React.useContext(AuthContext);
   const { theme, changeTheme } = React.useContext(ThemeContext);
-  const { colors } = useTheme();
+  const { colors } = useTheme() as customTheme;
   const navigation = useNavigation();
   console.log("username", username, "authstate", authState.userInfo.username);
   return (
@@ -67,49 +70,50 @@ const HeaderComponent = ({ username, postCount }) => {
   );
 };
 
-const User = ({ route, ...ggg }) => {
+const User = (props: { route: any, otherProps: any[] }) => {
+  const { route, otherProps } = props;
   const { authState } = React.useContext(AuthContext);
   const { colors } = useTheme();
-  console.log("ggg", ggg);
-  const [isLoading, setIsLoaading] = React.useState(false);
-  const [userPosts, setuserPosts] = React.useState(null);
+  console.log("ggg", otherProps);
+  const [isLoading, setIsLoading] = React.useState(false);
+  const [userPosts, setuserPosts] = React.useState<postType[] | null>(null);
 
   const username = route.params?.username;
 
   const getUserPostDetail = React.useCallback(async () => {
-    setIsLoaading(true);
+    setIsLoading(true);
     const { data } = await axios.get(
       `user/${username || authState.userInfo.username}`
     );
     setuserPosts(data);
-    setIsLoaading(false);
+    setIsLoading(false);
   }, [authState.userInfo.username, username]);
 
   React.useEffect(() => {
     getUserPostDetail();
   }, [getUserPostDetail]);
 
-  const deletePost = async (postId, index) => {
-    setIsLoaading(true);
+  const deletePost = async (postId: number, index: number) => {
+    setIsLoading(true);
     const { status } = await axios.delete(`post/${postId}`);
     if (status === 200) {
       setuserPosts((prevData) => {
-        prevData.splice(index, 1);
+        prevData?.splice(index, 1);
         return prevData;
       });
     }
-    setIsLoaading(false);
+    setIsLoading(false);
   };
 
   return (
-    <View as={SafeAreaView} style={styles.boxCenter}>
+    <SafeAreaView style={styles.boxCenter}>
       {userPosts ? (
         <FlatList
-          data={userPosts.sort((a, b) => a.created < b.created)}
+          data={userPosts.sort((a, b) => a.created - b.created)}
           extraData={isLoading}
           refreshing={isLoading}
           onRefresh={() => getUserPostDetail()}
-          keyExtractor={(item) => item.id}
+          keyExtractor={(item) => String(item.id)}
           ListEmptyComponent={
             <Text style={[styles.empty, { color: colors.text }]}>
               Ups! Not found any post!
@@ -122,7 +126,6 @@ const User = ({ route, ...ggg }) => {
           ListHeaderComponentStyle={styles.headerComponentStyle}
           renderItem={({ item, index }) => (
             <Post
-              index={index}
               postId={item.id}
               userId={authState.userInfo.id}
               score={item.score}
@@ -136,8 +139,9 @@ const User = ({ route, ...ggg }) => {
               url={item.url}
               votes={item.votes}
               views={item.views}
-              setIsLoaading={setIsLoaading}
-              setData={setuserPosts}
+              setIsLoading={setIsLoading}
+              // TODO: originally this was setUserPosts, but it was as array thus incompatible with postType
+              setData={item.setData}
               deleteButton={true}
               deletePost={() => deletePost(item.id, index)}
             />
@@ -150,7 +154,7 @@ const User = ({ route, ...ggg }) => {
           ))}
         </>
       )}
-    </View>
+    </SafeAreaView>
   );
 };
 

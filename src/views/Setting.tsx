@@ -1,26 +1,21 @@
 import React from "react";
 import {
-  FlatList,
   StyleSheet,
   Text,
   TouchableOpacity,
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useNavigation, useTheme } from "@react-navigation/native";
+import { useTheme } from "@react-navigation/native";
 
-import axios from "../utils/fetcher";
-import { AuthContext } from "../context/authContext";
 import { ThemeContext } from "../context/themeSwichContext";
 
-import { LogOut, Moon, Sun } from "../components/icons";
-import Post from "../components/Post";
-import PostLoader from "../components/PostLoader";
+import { Moon, Sun } from "../components/icons";
 import SettingButton from "../components/SettingButton";
+import { customTheme } from "../constants/default-theme";
 
-const Setting = ({ route }) => {
-  const { authState } = React.useContext(AuthContext);
-  const { colors } = useTheme();
+const Setting = () => {
+  const { colors } = useTheme() as customTheme;
   const { theme, changeTheme } = React.useContext(ThemeContext);
   let menuList = [
     {
@@ -63,7 +58,7 @@ const Setting = ({ route }) => {
   ];
 
   return (
-    <View as={SafeAreaView} style={styles.boxCenter}>
+    <SafeAreaView style={styles.boxCenter}>
       {menuList.map((item, i) => (
         <View style={styles.list} key={i}>
           {/*<ListItem*/}
@@ -91,7 +86,7 @@ const Setting = ({ route }) => {
           {theme === "light" ? "Dark Mode" : "Light Mode"}
         </Text>
       </TouchableOpacity>
-    </View>
+    </SafeAreaView>
   );
 };
 
