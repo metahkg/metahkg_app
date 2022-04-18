@@ -15,15 +15,15 @@ import { AuthContext } from "../context/authContext";
 
 import { ArrowDown, ArrowUp, MessageSquare, Trash } from "./icons/index";
 import { postType } from "../types/post";
+import customDefaultTheme from "../constants/default-theme";
 
 const Post = (props: {
-  index?: number;
   postId: number;
   userId: number;
   score: number;
   type: string;
   title: string;
-  author: string;
+  author: { username: string; id: number };
   category: number;
   text: string;
   comments: string[];
@@ -38,7 +38,6 @@ const Post = (props: {
   deletePost?: any;
 }) => {
   const {
-    index,
     postId,
     userId,
     score,
@@ -57,7 +56,7 @@ const Post = (props: {
     deleteButton,
     deletePost,
   } = props;
-  const { colors } = useTheme();
+  const { colors } = customDefaultTheme;
   const navigation = useNavigation();
   const { authState } = React.useContext(AuthContext);
   const route = useRoute();
@@ -73,32 +72,21 @@ const Post = (props: {
   const upVote = async () => {
     setIsLoading(true);
     const { data } = await axios.get(`post/${postId}/upvote`);
-    setData((prevData) => {
-      if (prevData) {
-        prevData[index] = data;
-      }
-      return prevData;
-    });
+    setData(data);
     setIsLoading(false);
   };
 
   const downVote = async () => {
     setIsLoading(true);
     const { data } = await axios.get(`post/${postId}/downvote`);
-    setData((prevData) => {
-      prevData[index] = data;
-      return prevData;
-    });
+    setData(data);
     setIsLoading(false);
   };
 
   const unVote = async () => {
     setIsLoading(true);
     const { data } = await axios.get(`post/${postId}/unvote`);
-    setData((prevData) => {
-      prevData[index] = data;
-      return prevData;
-    });
+    setData(data);
     setIsLoading(false);
   };
 
@@ -214,7 +202,7 @@ const Post = (props: {
   );
 };
 
-const styles = StyleSheet.create({
+const styles: any = StyleSheet.create({
   container: {
     paddingHorizontal: 15,
     paddingVertical: 7,
