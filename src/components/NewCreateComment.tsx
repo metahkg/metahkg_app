@@ -1,12 +1,16 @@
 import React from "react";
-import { StyleSheet, TextInput, TouchableOpacity, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 import { useTheme } from "@react-navigation/native";
-
-import { Send } from "../components/icons";
-// import EmojiSelector from 'react-native-emoji-selector'
-const CreateComment = ({ onPress, setComment, comment, setIsFocused }) => {
-  const { colors } = useTheme();
-  const textInputRef = React.useRef();
+import { customTheme } from "../constants/default-theme";
+import EmojiSelector from 'react-native-emoji-selector'
+const CreateComment = (props: {
+  onPress: any;
+  setComment: any;
+  comment: any;
+  setIsFocused: any;
+}) => {
+  const { colors } = useTheme() as customTheme;
+  //const textInputRef = React.useRef();
 
   return (
     <View style={[styles.container, { backgroundColor: colors.bgColor }]}>
@@ -27,27 +31,27 @@ const CreateComment = ({ onPress, setComment, comment, setIsFocused }) => {
       {/*    autoCorrect={false}*/}
       {/*    value={comment}*/}
       {/*/>*/}
-      <EmojiSelector onEmojiSelected={(emoji) => console.log(emoji)} />
+      <EmojiSelector onEmojiSelected={(emoji: any) => console.log(emoji)} />
     </View>
   );
 };
 
 const styles = StyleSheet.create({
-  // container: {
-  //     flexDirection: 'row',
-  //     justifyContent: 'center',
-  //     alignItems: 'center',
-  //     padding: 2,
-  //     paddingHorizontal: 5,
-  //     elevation: 3
-  // },
-  // textInput: {
-  //     flex: 1,
-  //     margin: 5,
-  //     height: 40,
-  //     borderRadius: 10,
-  //     paddingHorizontal: 15
-  // }
+  container: {
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    padding: 2,
+    paddingHorizontal: 5,
+    elevation: 3,
+  },
+  textInput: {
+    flex: 1,
+    margin: 5,
+    height: 40,
+    borderRadius: 10,
+    paddingHorizontal: 15,
+  },
 });
 
 export default CreateComment;

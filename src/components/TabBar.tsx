@@ -4,11 +4,23 @@ import { useTheme } from "@react-navigation/native";
 
 import { AuthContext } from "../context/authContext";
 import { Home, PlusSquare, User, Setting } from "./icons/index";
+import { customTheme } from "../constants/default-theme";
 
-function TabBar({ state, descriptors, navigation }) {
+function TabBar(props: {
+  state: {
+    index: number;
+    routes: { key?: React.Key; name: string }[];
+  };
+  descriptors: {
+    [index: React.Key]: {
+      options: { tabBarIcon?: any; tabBarLabel?: string; title?: string };
+    };
+  };
+  navigation: any;
+}) {
   const { authState } = React.useContext(AuthContext);
-  const { colors } = useTheme();
-
+  const { colors } = useTheme() as customTheme;
+  const { state, descriptors, navigation } = props;
   return (
     <View
       style={[
@@ -16,14 +28,12 @@ function TabBar({ state, descriptors, navigation }) {
         { backgroundColor: colors.bgColor, borderColor: colors.border },
       ]}
     >
-      {state.routes.map((route, index) => {
-        const { options } = descriptors[route.key];
+      {state.routes.map((route, index: number) => {
+        const { options } = descriptors[route.key || ""];
         const label =
-          options.tabBarLabel !== undefined
-            ? options.tabBarLabel
-            : options.title !== undefined
-            ? options.title
-            : route.name;
+          (options.tabBarLabel && options.tabBarLabel) ||
+          (options.title && options.title) ||
+          route.name;
 
         const isFocused = state.index === index;
 

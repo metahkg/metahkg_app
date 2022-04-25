@@ -1,11 +1,12 @@
 import React from "react";
 // import AsyncStorage from '@react-native-community/async-storage'
 // import AsyncStorage from '@react-native-async-storage/async-storage'
-const ContentContext = React.createContext();
+const ContentContext = React.createContext<any>(null);
 const { Provider } = ContentContext;
 
-const ContentProvider = ({ children }) => {
-  const [content, setcontent] = React.useState(" ");
+const ContentProvider = (props: { children: JSX.Element | JSX.Element[] }) => {
+  const { children } = props;
+  const [content, setcontent] = React.useState("");
 
   // React.useEffect(() => {
   //     const bootstrapAsync = async () => {
@@ -22,7 +23,7 @@ const ContentProvider = ({ children }) => {
   //     bootstrapAsync()
   // }, [])
 
-  const changecontent = async (value) => {
+  const changecontent = async (value: string) => {
     console.log("content set in context ");
     setcontent(value);
     console.log("content len ", content.length);

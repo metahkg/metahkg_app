@@ -16,7 +16,8 @@ import Feather from "react-native-vector-icons/Feather";
 import axios from "../../../utils/fetcher";
 import { AuthContext } from "../../../context/authContext";
 
-const SignInScreen = ({ navigation }) => {
+const SignInScreen = (props: { navigation: any }) => {
+  const { navigation } = props;
   const { setStorage } = React.useContext(AuthContext);
   const [data, setData] = React.useState({
     username: "",
@@ -27,7 +28,7 @@ const SignInScreen = ({ navigation }) => {
     confirm_secureTextEntry: true,
   });
 
-  const textInputChange = (val) => {
+  const textInputChange = (val: string) => {
     if (val.length !== 0) {
       setData({
         ...data,
@@ -43,14 +44,14 @@ const SignInScreen = ({ navigation }) => {
     }
   };
 
-  const handlePasswordChange = (val) => {
+  const handlePasswordChange = (val: string) => {
     setData({
       ...data,
       password: val,
     });
   };
 
-  const handleConfirmPasswordChange = (val) => {
+  const handleConfirmPasswordChange = (val: string) => {
     setData({
       ...data,
       confirm_password: val,
@@ -71,7 +72,7 @@ const SignInScreen = ({ navigation }) => {
     });
   };
 
-  const signupHandle = async (userName, password) => {
+  const signupHandle = async (userName: string, password: string) => {
     let values = { username: userName, password: password };
 
     try {

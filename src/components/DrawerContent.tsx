@@ -1,5 +1,5 @@
 import React from "react";
-import { StyleSheet, View } from "react-native";
+import { ScrollViewProps, StyleSheet, View } from "react-native";
 import {
   Avatar,
   Caption,
@@ -18,7 +18,10 @@ import { AuthContext } from "../context/authContext";
 
 // import { AuthContext } from "../components/context";
 
-export function DrawerContent(props) {
+export function DrawerContent(props: {
+  children: React.ReactNode;
+  navigation: any;
+}) {
   const paperTheme = useTheme();
   const { signOut, authState } = React.useContext(AuthContext);
   // const { signOut, toggleTheme } = React.useContext(AuthContext);
@@ -117,7 +120,13 @@ export function DrawerContent(props) {
               }}
             >
               <View style={styles.preference}>
-                <Text>Dark Theme</Text>
+                <Text
+                  onPressIn={() => {}}
+                  onPressOut={() => {}}
+                  style={styles.title}
+                >
+                  Dark Theme
+                </Text>
                 <View pointerEvents="none">
                   <Switch value={paperTheme.dark} />
                 </View>

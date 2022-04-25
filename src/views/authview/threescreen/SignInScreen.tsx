@@ -20,7 +20,8 @@ import Users from "../model/users";
 import axios from "../../../utils/fetcher";
 import { AuthContext } from "../../../context/authContext";
 
-const SignInScreen = ({ navigation }) => {
+const SignInScreen = (props: { navigation: any }) => {
+  const { navigation } = props;
   const { setStorage } = React.useContext(AuthContext);
   const [data, setData] = React.useState({
     username: "",
@@ -35,7 +36,7 @@ const SignInScreen = ({ navigation }) => {
 
   // const {signIn} = React.useContext(AuthContext);
 
-  const textInputChange = (val) => {
+  const textInputChange = (val: string) => {
     if (val.trim().length >= 4) {
       setData({
         ...data,
@@ -53,7 +54,7 @@ const SignInScreen = ({ navigation }) => {
     }
   };
 
-  const handlePasswordChange = (val) => {
+  const handlePasswordChange = (val: string) => {
     if (val.trim().length >= 8) {
       setData({
         ...data,
@@ -76,7 +77,7 @@ const SignInScreen = ({ navigation }) => {
     });
   };
 
-  const handleValidUser = (val) => {
+  const handleValidUser = (val: string) => {
     if (val.trim().length >= 4) {
       setData({
         ...data,
@@ -90,7 +91,7 @@ const SignInScreen = ({ navigation }) => {
     }
   };
 
-  const loginHandle = async (userName, password) => {
+  const loginHandle = async (userName: string, password: string) => {
     let values = { username: userName, password: password };
 
     try {

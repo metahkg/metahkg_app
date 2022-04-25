@@ -12,7 +12,8 @@ import { LinearGradient } from "expo-linear-gradient";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import { useTheme } from "@react-navigation/native";
 
-const SplashScreen = ({ navigation }) => {
+const SplashScreen = (props: { navigation: any }) => {
+  const { navigation } = props;
   const { colors } = useTheme();
 
   return (
@@ -21,7 +22,7 @@ const SplashScreen = ({ navigation }) => {
       <View style={styles.header}>
         <Animatable.Image
           animation="bounceIn"
-          duraton="1500"
+          duration={1500}
           source={require("../../../../assets/logo.png")}
           style={styles.logo}
           resizeMode="stretch"

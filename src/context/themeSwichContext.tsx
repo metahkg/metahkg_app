@@ -1,10 +1,11 @@
 import React from "react";
 // import AsyncStorage from '@react-native-community/async-storage'
 import AsyncStorage from "@react-native-async-storage/async-storage";
-const ThemeContext = React.createContext();
+const ThemeContext = React.createContext<any>(null);
 const { Provider } = ThemeContext;
 
-const ThemeProvider = ({ children }) => {
+const ThemeProvider = (props: { children: JSX.Element | JSX.Element[] }) => {
+  const { children } = props;
   const [theme, setTheme] = React.useState("light");
 
   React.useEffect(() => {
@@ -22,7 +23,7 @@ const ThemeProvider = ({ children }) => {
     bootstrapAsync();
   }, []);
 
-  const changeTheme = async (value) => {
+  const changeTheme = async (value: string) => {
     setTheme(value);
     try {
       await AsyncStorage.setItem("theme", value);

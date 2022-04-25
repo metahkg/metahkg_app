@@ -3,10 +3,11 @@ import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useNavigation, useRoute, useTheme } from "@react-navigation/native";
 import { AuthContext } from "../context/authContext";
+import { customTheme } from "../constants/default-theme";
 
-const Post = ({
-  title,
-  onPressGoTo,
+const Post = (props: {
+  title: string;
+  onPressGoTo: string;
   // index,
   // postId,
   // userId,
@@ -27,7 +28,8 @@ const Post = ({
   // deleteButton,
   // deletePost
 }) => {
-  const { colors } = useTheme();
+  const { title, onPressGoTo } = props;
+  const { colors } = useTheme() as customTheme;
   const navigation = useNavigation();
   const { authState } = React.useContext(AuthContext);
   const route = useRoute();
@@ -92,8 +94,7 @@ const Post = ({
       }}
       style={styles.infoBox}
     >
-      <View
-        as={SafeAreaView}
+      <SafeAreaView
         style={[
           styles.container,
           { backgroundColor: colors.bgColor, borderColor: colors.postBorder },
@@ -187,7 +188,7 @@ const Post = ({
         {/*    </TouchableOpacity>*/}
         {/*    <Text style={[styles.italicFont, {color: colors.text}]}>{views} views</Text>*/}
         {/*</View>*/}
-      </View>
+      </SafeAreaView>
     </TouchableOpacity>
   );
 };
@@ -257,6 +258,11 @@ const styles = StyleSheet.create({
   link: {
     color: "#0064bd",
     fontWeight: "bold",
+  },
+  infoBox: {
+    justifyContent: "space-around",
+    alignItems: "center",
+    height: 50,
   },
 });
 

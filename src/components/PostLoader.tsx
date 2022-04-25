@@ -1,11 +1,12 @@
 import React from "react";
 import { StyleSheet, View } from "react-native";
 import { useTheme } from "@react-navigation/native";
+import { customTheme } from "../constants/default-theme";
 
 import TextLoader from "./TextLoader";
 
 const PostLoader = ({ ...props }) => {
-  const { colors } = useTheme();
+  const { colors } = useTheme() as customTheme;
 
   return (
     <View

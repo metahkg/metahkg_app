@@ -72,7 +72,8 @@ function SignScreens() {
 //     )
 // }
 
-function HomeScreens({ navigation }) {
+function HomeScreens(props: { navigation: any }) {
+  const { navigation } = props;
   console.log("navigation is received,", navigation);
   return (
     <HomeStack.Navigator
@@ -103,40 +104,49 @@ function HomeScreens({ navigation }) {
       <HomeStack.Screen
         name="PostDetail"
         component={PostDetail}
-        options={({ route }) => ({
-          headerShown: true,
-          headerTitle: route.params.category,
-          headerStyle: { height: 40 },
-          headerTitleStyle: {
-            fontSize: 16,
-          },
-          headerTitleAlign: "center",
-        })}
+        options={(props: { route: any }) => {
+          const { route } = props;
+          return {
+            headerShown: true,
+            headerTitle: route.params.category,
+            headerStyle: { height: 40 },
+            headerTitleStyle: {
+              fontSize: 16,
+            },
+            headerTitleAlign: "center",
+          };
+        }}
       />
       <HomeStack.Screen
         name="preview"
         component={Preview}
-        options={({ route }) => ({
-          headerTitle: route.params.category,
-          headerStyle: { height: 40 },
-          headerTitleStyle: {
-            fontSize: 16,
-          },
-          headerTitleAlign: "center",
-        })}
+        options={(props: { route: any }) => {
+          const { route } = props;
+          return {
+            headerTitle: route.params.category,
+            headerStyle: { height: 40 },
+            headerTitleStyle: {
+              fontSize: 16,
+            },
+            headerTitleAlign: "center",
+          };
+        }}
       />
 
       <HomeStack.Screen
         name="CommentReply"
         component={CommentReply}
-        options={({ route }) => ({
-          headerTitle: route.params.category,
-          headerStyle: { height: 40 },
-          headerTitleStyle: {
-            fontSize: 16,
-          },
-          headerTitleAlign: "center",
-        })}
+        options={(props: { route: any }) => {
+          const { route } = props;
+          return {
+            headerTitle: route.params.category,
+            headerStyle: { height: 40 },
+            headerTitleStyle: {
+              fontSize: 16,
+            },
+            headerTitleAlign: "center",
+          };
+        }}
       />
     </HomeStack.Navigator>
   );
@@ -147,7 +157,7 @@ function SettingScreens() {
     <SettingStack.Navigator
       screenOptions={{
         gestureEnabled: true,
-        gestureDirection: "horizontal",
+        //gestureDirection: "horizontal",
         ...TransitionPresets.SlideFromRightIOS,
       }}
     >
@@ -187,7 +197,10 @@ function SettingScreens() {
 function MyTabs() {
   return (
     <Drawer.Navigator
-      drawerContent={(props) => <DrawerContent {...props} />}
+      drawerContent={(props) => (
+        // TODO: WARNING: don't know what is the children
+        <DrawerContent {...props}>?</DrawerContent>
+      )}
       // screenOptions={{
       //     animationEnabled: true
       // }}
