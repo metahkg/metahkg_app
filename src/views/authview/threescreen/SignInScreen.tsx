@@ -13,11 +13,11 @@ import * as Animatable from "react-native-animatable";
 import { LinearGradient } from "expo-linear-gradient";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import Feather from "react-native-vector-icons/Feather";
-
+import hash from "hash.js";
 import { useTheme } from "react-native-paper";
-
+import jwtDecode from "jwt-decode";
 import Users from "../model/users";
-import axios from "../../../utils/fetcher";
+import axios, { api } from "../../../utils/fetcher";
 import { AuthContext } from "../../../context/authContext";
 
 const SignInScreen = (props: { navigation: any }) => {
@@ -92,11 +92,18 @@ const SignInScreen = (props: { navigation: any }) => {
   };
 
   const loginHandle = async (userName: string, password: string) => {
-    let values = { username: userName, password: password };
+    let values = {
+      name: userName,
+      pwd: hash.sha256().update(password).digest("hex"),
+    };
 
     try {
-      const { data } = await axios.post("authenticate", values);
-      const { token, expiresAt, userInfo } = data;
+      const { data } = await api.post("/users/signin", values);
+      const { token } = data;
+      const decoded = jwtDecode(token) as any;
+      console.log(decoded);
+      const expiresAt = decoded?.exp;
+      const userInfo = decoded;
       setStorage(token, expiresAt, userInfo);
       // navigation.navigate('Home')
       // resetForm({})

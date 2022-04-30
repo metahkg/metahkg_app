@@ -4,7 +4,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const instanceAxios = axios.create({
   // baseURL: 'https://intense-shore-46981.herokuapp.com/api/',
-  baseURL: "http://eaab-185-225-234-145.ngrok.io/api",
+  baseURL: "http://0567-202-165-70-22.ngrok.io/api/",
 });
 
 instanceAxios.interceptors.request.use(
@@ -34,3 +34,34 @@ instanceAxios.interceptors.response.use(
 );
 
 export default instanceAxios;
+
+export const api = axios.create({
+  // baseURL: 'https://intense-shore-46981.herokuapp.com/api/',
+  baseURL: "https://dev.metahkg.org/api",
+});
+
+api.interceptors.request.use(
+  async (config) => {
+    if (config.headers) {
+      const token = await AsyncStorage.getItem("token");
+      config.headers.Authorization = `Bearer ${token}`;
+      return config;
+    }
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
+);
+
+api.interceptors.response.use(
+  (response) => {
+    return response;
+  },
+  (error) => {
+    const code = error && error.response ? error.response.status : 0;
+    if (code === 401 || code === 403) {
+      console.log("error code", code);
+    }
+    return Promise.reject(error);
+  }
+);

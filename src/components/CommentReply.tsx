@@ -1,11 +1,12 @@
-import React from "react";
+import React, { useRef, useState } from "react";
 import { Text, TouchableOpacity, View } from "react-native";
 import { useTheme } from "@react-navigation/native";
 import { Send } from "./icons";
 import { Example } from "./TextEditorArea/TextEditor";
 import { ThemeContext } from "../context/themeSwichContext";
 import { ContentContext } from "../context/contentChangeContext";
-import axios from "../utils/fetcher";
+import Recaptcha, { RecaptchaHandles } from "react-native-recaptcha-that-works";
+import axios, { api } from "../utils/fetcher";
 // import Tinymce from "./Tinymce";
 // import {RichEditor} from "react-native-pell-rich-editor";
 // import {RichEditor} from "react-native-pell-rich-editor";
@@ -16,6 +17,8 @@ const Reply = (props: { navigation: any; route: any }) =>
     const { colors } = useTheme();
     const { content, changecontent } = React.useContext(ContentContext);
     const { theme, changeTheme } = React.useContext(ThemeContext);
+    const recaptcha = useRef<RecaptchaHandles>(null);
+    const [rtoken, setRtoken] = useState("");
 
     console.log(
       "reply called, themes is  ",
@@ -26,9 +29,11 @@ const Reply = (props: { navigation: any; route: any }) =>
     );
     const createComment = (comment: any) => {
       console.log("create comment called");
-      axios
-        .post(`/post/${route.params.postId}`, {
+      api
+        .post(`/posts/comment`, {
           comment,
+          rtoken,
+          id: route.params.postId,
         })
         .then(() => {
           console.log("comment created");
@@ -38,23 +43,59 @@ const Reply = (props: { navigation: any; route: any }) =>
       // setComment('')
     };
     const [count, setCount] = React.useState(0);
+    const onVerify = (token: string) => {
+      setRtoken(token);
+      console.log(token);
+    };
+    const onExpire = () => {
+      setRtoken("");
+    };
     React.useLayoutEffect(() => {
       navigation.setOptions({
         headerRight: () => (
-          <TouchableOpacity
-            onPress={() => {
-              console.log("content is now", content);
-              createComment(content);
-              // send(content)
-              // onPress()
-            }}
-          >
-            <Send color={colors.text} />
-          </TouchableOpacity>
+          <React.Fragment>
+            <Recaptcha
+              ref={recaptcha}
+              siteKey={
+                process.env.REACT_APP_recaptchasitekey ||
+                "6LcX4bceAAAAAIoJGHRxojepKDqqVLdH9_JxHQJ-"
+              }
+              baseUrl="https://dev.metahkg.org"
+              onVerify={onVerify}
+              onExpire={onExpire}
+              onClose={() => {
+                console.log("closing recaptcha");
+              }}
+              onError={(err) => {
+                console.log(err);
+              }}
+              onLoad={() => {
+                console.log("recaptcha loaded");
+              }}
+              size="normal"
+              //theme="dark"
+            />
+            <TouchableOpacity
+              onPress={() => {
+                console.log("content is now", content);
+                console.log(!rtoken);
+                if (!rtoken) {
+                  recaptcha.current?.open();
+                  return;
+                }
+                createComment(content);
+                console.log("creating comment");
+                // send(content)
+                // onPress()
+              }}
+            >
+              <Send color={colors.text} />
+            </TouchableOpacity>
+          </React.Fragment>
           // <Button onPress={() => setCount((c) => c + 1)} title="Update count" />
         ),
       });
-    }, [navigation, setCount]);
+    }, [navigation, setCount, rtoken]);
 
     return (
       // <TouchableOpacity
