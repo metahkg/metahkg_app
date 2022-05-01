@@ -3,6 +3,8 @@ import { DefaultTheme, Theme } from "@react-navigation/native";
 export type customTheme = {
   colors: {
     blue: string;
+    yellow: string;
+    yellow2: string;
     text: string;
     border: string;
     green: string;
@@ -26,6 +28,8 @@ const customDefaultTheme = {
     border: "#ecedf0",
     green: "#80bdab",
     red: "#d31f4f",
+    yellow: "#ffc100",
+    yellow2: "#f5bd1f",
     white: "white",
     bgColor: "white",
     signUpButton: "#ce815e",

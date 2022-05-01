@@ -9,6 +9,8 @@ const customDarkTheme = {
     grey: "#e0dede",
     border: "#888888",
     green: "#438a5e",
+    yellow: "#ffc100",
+    yellow2: "#f5bd1f",
     red: "#d31f4f",
     white: "white",
     bgColor: "#1b1b2f",

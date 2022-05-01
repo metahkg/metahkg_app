@@ -43,8 +43,8 @@ const CategoryPicker = (props: {
                 {
                   fontWeight: item.id === selectedCategory ? "bold" : "normal",
                   borderBottomColor:
-                    item.id === selectedCategory ? colors.blue : "transparent",
-                  color: item.id === selectedCategory ? colors.blue : colors.text,
+                    item.id === selectedCategory ? colors.yellow : "transparent",
+                  color: item.id === selectedCategory ? colors.yellow2 : colors.text,
                 },
               ]}
             >

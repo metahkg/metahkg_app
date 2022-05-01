@@ -97,7 +97,10 @@ const Post = (props: {
       <View style={styles.headerContainer}>
         <View style={styles.headerLeft}>
           <Text
-            style={[styles.italicFont, { color: colors.blue }]}
+            style={[
+              styles.italicFont,
+              { color: author.sex === "M" ? colors.blue : colors.red },
+            ]}
             onPress={() =>
               navigation.navigate("User", { username: author.name })
             }
@@ -131,7 +134,7 @@ const Post = (props: {
 
           <Text style={[styles.regularFont, { color: colors.text }]}>
             {"  "}
-            {categories.find(c => c.id === category)?.name}{" "}
+            {categories.find((c) => c.id === category)?.name}{" "}
           </Text>
 
           {deleteButton && author?.id === authState.userInfo.id && (
