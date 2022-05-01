@@ -1,5 +1,6 @@
-import React from "react";
+import React, { useRef } from "react";
 import {
+  Alert,
   Platform,
   ScrollView,
   StatusBar,
@@ -13,76 +14,154 @@ import * as Animatable from "react-native-animatable";
 import { LinearGradient } from "expo-linear-gradient";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import Feather from "react-native-vector-icons/Feather";
-import axios from "../../../utils/fetcher";
+import axios, { api } from "../../../utils/fetcher";
 import { AuthContext } from "../../../context/authContext";
-
+import Recaptcha, { RecaptchaHandles } from "react-native-recaptcha-that-works";
+import jwtDecode from "jwt-decode";
+import { jwtTokenType } from "../../../types/user";
+import RNPickerSelect from "react-native-picker-select";
+import hash from "hash.js";
 const SignInScreen = (props: { navigation: any }) => {
   const { navigation } = props;
   const { setStorage } = React.useContext(AuthContext);
-  const [data, setData] = React.useState({
+  const [state, setState] = React.useState({
     username: "",
     password: "",
+    email: "",
+    rtoken: "",
+    sex: "",
     confirm_password: "",
-    check_textInputChange: false,
+    check_usernameChange: false,
+    check_emailChange: false,
     secureTextEntry: true,
     confirm_secureTextEntry: true,
   });
 
-  const textInputChange = (val: string) => {
+  const recaptcha = useRef<RecaptchaHandles>(null);
+
+  const usernameChange = (val: string) => {
     if (val.length !== 0) {
-      setData({
-        ...data,
+      setState({
+        ...state,
         username: val,
-        check_textInputChange: true,
+        check_usernameChange: true,
       });
     } else {
-      setData({
-        ...data,
+      setState({
+        ...state,
         username: val,
-        check_textInputChange: false,
+        check_usernameChange: false,
+      });
+    }
+  };
+
+  const emailChange = (val: string) => {
+    if (val) {
+      setState({
+        ...state,
+        email: val,
+        check_emailChange: true,
+      });
+    } else {
+      setState({
+        ...state,
+        email: val,
+        check_emailChange: false,
       });
     }
   };
 
   const handlePasswordChange = (val: string) => {
-    setData({
-      ...data,
+    setState({
+      ...state,
       password: val,
     });
   };
 
   const handleConfirmPasswordChange = (val: string) => {
-    setData({
-      ...data,
+    setState({
+      ...state,
       confirm_password: val,
     });
   };
 
   const updateSecureTextEntry = () => {
-    setData({
-      ...data,
-      secureTextEntry: !data.secureTextEntry,
+    setState({
+      ...state,
+      secureTextEntry: !state.secureTextEntry,
     });
   };
 
   const updateConfirmSecureTextEntry = () => {
-    setData({
-      ...data,
-      confirm_secureTextEntry: !data.confirm_secureTextEntry,
+    setState({
+      ...state,
+      confirm_secureTextEntry: !state.confirm_secureTextEntry,
     });
   };
 
-  const signupHandle = async (userName: string, password: string) => {
-    let values = { username: userName, password: password };
-
+  const signupHandler = async () => {
+    const { username, password, email, rtoken, sex } = state;
+    const values = {
+      name: username,
+      pwd: hash.sha256().update(password).digest("hex"),
+      email,
+      rtoken,
+      sex,
+    };
+    console.log(values);
     try {
-      const { data } = await axios.post("signup", values);
-      const { token, expiresAt, userInfo } = data;
-      setStorage(token, expiresAt, userInfo);
+      await api.post("/users/register", values);
+      setState({ ...state, rtoken: "" });
+      Alert.alert(
+        "Verify your email",
+        "A email has been sent to your email address for verification. Press ok after you have verified.",
+        [
+          {
+            text: "Cancel",
+            onPress: () => Alert.alert("You can sign in after verifying."),
+            style: "cancel",
+          },
+          {
+            text: "OK",
+            onPress: () => {
+              api
+                .post("/users/signin", {
+                  name: username,
+                  pwd: hash.sha256().update(password).digest("hex"),
+                })
+                .then((res) => {
+                  const { token } = res.data;
+                  console.log(token);
+                  const decoded = jwtDecode(token) as jwtTokenType;
+                  console.log(decoded);
+                  const expiresAt = decoded?.exp;
+                  const userInfo = decoded;
+                  setStorage(token, expiresAt, userInfo);
+                });
+            },
+            style: "default",
+          },
+        ],
+        {
+          cancelable: true,
+          onDismiss: () => Alert.alert("You can sign in after verifying."),
+        }
+      );
+      //const { token } = data;
+      //const decoded = jwtDecode(token) as jwtTokenType;
+      //const expiresAt = decoded?.exp;
+      //const userInfo = decoded;
+      //setStorage(token, expiresAt, userInfo);
       // navigation.navigate('Home')
       // resetForm({})
-    } catch (error) {
-      console.log("error", error);
+    } catch (error: any) {
+      setState({ ...state, rtoken: "" });
+      Alert.alert(
+        error?.response?.data?.error ||
+          error?.response?.data ||
+          error ||
+          "Something went wrong."
+      );
       // setStatus(error.response.data.message)
     }
   };
@@ -102,14 +181,49 @@ const SignInScreen = (props: { navigation: any }) => {
               placeholder="Your Username"
               style={styles.textInput}
               autoCapitalize="none"
-              onChangeText={(val) => textInputChange(val)}
+              onChangeText={usernameChange}
             />
-            {data.check_textInputChange ? (
+            {state.check_usernameChange ? (
               <Animatable.View animation="bounceIn">
                 <Feather name="check-circle" color="green" size={20} />
               </Animatable.View>
             ) : null}
           </View>
+
+          <Text
+            style={[
+              styles.text_footer,
+              {
+                marginTop: 35,
+              },
+            ]}
+          >
+            Email
+          </Text>
+          <View style={styles.action}>
+            <FontAwesome name="envelope-o" color="#05375a" size={20} />
+            <TextInput
+              placeholder="Your Email"
+              style={styles.textInput}
+              autoCapitalize="none"
+              onChangeText={emailChange}
+            />
+            {state.check_emailChange ? (
+              <Animatable.View animation="bounceIn">
+                <Feather name="check-circle" color="green" size={20} />
+              </Animatable.View>
+            ) : null}
+          </View>
+
+          <Text style={[styles.text_footer, { marginTop: 35 }]}>Sex</Text>
+          <RNPickerSelect
+            onValueChange={(value) => setState({ ...state, sex: value })}
+            items={[
+              { label: "Male", value: "M" },
+              { label: "Female", value: "F" },
+            ]}
+            value={state.sex}
+          />
 
           <Text
             style={[
@@ -125,13 +239,13 @@ const SignInScreen = (props: { navigation: any }) => {
             <Feather name="lock" color="#05375a" size={20} />
             <TextInput
               placeholder="Your Password"
-              secureTextEntry={data.secureTextEntry ? true : false}
+              secureTextEntry={state.secureTextEntry ? true : false}
               style={styles.textInput}
               autoCapitalize="none"
               onChangeText={(val) => handlePasswordChange(val)}
             />
             <TouchableOpacity onPress={updateSecureTextEntry}>
-              {data.secureTextEntry ? (
+              {state.secureTextEntry ? (
                 <Feather name="eye-off" color="grey" size={20} />
               ) : (
                 <Feather name="eye" color="grey" size={20} />
@@ -153,13 +267,13 @@ const SignInScreen = (props: { navigation: any }) => {
             <Feather name="lock" color="#05375a" size={20} />
             <TextInput
               placeholder="Confirm Your Password"
-              secureTextEntry={data.confirm_secureTextEntry ? true : false}
+              secureTextEntry={state.confirm_secureTextEntry ? true : false}
               style={styles.textInput}
               autoCapitalize="none"
               onChangeText={(val) => handleConfirmPasswordChange(val)}
             />
             <TouchableOpacity onPress={updateConfirmSecureTextEntry}>
-              {data.secureTextEntry ? (
+              {state.secureTextEntry ? (
                 <Feather name="eye-off" color="grey" size={20} />
               ) : (
                 <Feather name="eye" color="grey" size={20} />
@@ -180,11 +294,41 @@ const SignInScreen = (props: { navigation: any }) => {
               Privacy policy
             </Text>
           </View>
+          <Recaptcha
+            ref={recaptcha}
+            siteKey={
+              process.env.REACT_APP_recaptchasitekey ||
+              "6LcX4bceAAAAAIoJGHRxojepKDqqVLdH9_JxHQJ-"
+            }
+            baseUrl="https://dev.metahkg.org"
+            onVerify={(rtoken) => {
+              setState({ ...state, rtoken });
+            }}
+            onExpire={() => {
+              console.log("recaptcha token expired");
+              setState({ ...state, rtoken: "" });
+            }}
+            onClose={() => {
+              console.log("closing recaptcha");
+            }}
+            onError={(err) => {
+              console.log(err);
+            }}
+            onLoad={() => {
+              console.log("recaptcha loaded");
+            }}
+            size="normal"
+            //theme="dark"
+          />
           <View style={styles.button}>
             <TouchableOpacity
               style={styles.signIn}
               onPress={() => {
-                signupHandle(data.username, data.password);
+                if (!state.rtoken) {
+                  recaptcha.current?.open();
+                  return;
+                }
+                signupHandler();
               }}
             >
               <LinearGradient

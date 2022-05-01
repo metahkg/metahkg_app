@@ -223,6 +223,7 @@ function MyTabs() {
 function RootScreen() {
   const { authState } = React.useContext(AuthContext);
   const { theme } = React.useContext(ThemeContext);
+  console.log(authState.userInfo);
   return (
     <NavigationContainer theme={theme === "light" ? DefaultTheme : DarkTheme}>
       {authState.token ? <MyTabs /> : <SignScreens />}

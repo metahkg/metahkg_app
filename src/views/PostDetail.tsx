@@ -51,14 +51,14 @@ const PostDetail = (props: { route: any; navigation: any }) => {
     setComment("");
   };
 
-  const deleteComment = async (commentId: any) => {
+  const deleteComment = async (commentId: number) => {
     setIsLoading(true);
     const { data } = await axios.delete(`/post/${postId}/${commentId}`);
     setPost(data);
     setIsLoading(false);
   };
 
-  const deletePost = async (postId: any) => {
+  const deletePost = async (postId: number) => {
     setIsLoading(true);
     const { status } = await axios.delete(`post/${postId}`);
     if (status === 200) {

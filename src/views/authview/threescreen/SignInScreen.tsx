@@ -19,6 +19,7 @@ import jwtDecode from "jwt-decode";
 import Users from "../model/users";
 import axios, { api } from "../../../utils/fetcher";
 import { AuthContext } from "../../../context/authContext";
+import { jwtTokenType } from "../../../types/user";
 
 const SignInScreen = (props: { navigation: any }) => {
   const { navigation } = props;
@@ -92,15 +93,16 @@ const SignInScreen = (props: { navigation: any }) => {
   };
 
   const loginHandle = async (userName: string, password: string) => {
-    let values = {
+    const values = {
       name: userName,
       pwd: hash.sha256().update(password).digest("hex"),
     };
+    console.log(values)
 
     try {
       const { data } = await api.post("/users/signin", values);
       const { token } = data;
-      const decoded = jwtDecode(token) as any;
+      const decoded = jwtDecode(token) as jwtTokenType;
       console.log(decoded);
       const expiresAt = decoded?.exp;
       const userInfo = decoded;
