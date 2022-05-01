@@ -16,21 +16,20 @@ import { AuthContext } from "../context/authContext";
 import { ArrowDown, ArrowUp, MessageSquare, Trash } from "./icons/index";
 import { authorType, commentType, postType } from "../types/post";
 import { customTheme } from "../constants/default-theme";
+import { userType } from "../types/user";
+import { useCategories } from "../context/contentChangeContext";
 
 const Post = (props: {
   postId: number;
   userId: number;
   score: number;
-  type: string;
   title: string;
-  author: authorType;
+  author: userType;
   category: number;
-  text: string;
-  comments: commentType[];
+  //text: string;
+  comments: number;
   created: number;
-  url: string;
-  votes: any[];
-  views: number;
+  //votes: any[];
   setIsLoading: React.Dispatch<SetStateAction<boolean>>;
   setData: React.Dispatch<SetStateAction<postType | null>>;
   postType?: string;
@@ -41,16 +40,13 @@ const Post = (props: {
     postId,
     userId,
     score,
-    type,
     title,
     author,
     category,
-    text,
+    //text,
     comments,
     created,
-    url,
-    votes,
-    views,
+    //votes,
     setIsLoading,
     setData,
     deleteButton,
@@ -59,15 +55,16 @@ const Post = (props: {
   const { colors } = useTheme() as customTheme;
   const navigation = useNavigation();
   const { authState } = React.useContext(AuthContext);
+  const categories = useCategories();
   const route = useRoute();
 
-  const isUpVoted = () => {
+  /*const isUpVoted = () => {
     return votes.find((v) => v.user === userId)?.vote === 1;
   };
 
   const isDownVoted = () => {
     return votes.find((v) => v.user === userId)?.vote === -1;
-  };
+  };*/
 
   const upVote = async () => {
     setIsLoading(true);
@@ -102,10 +99,10 @@ const Post = (props: {
           <Text
             style={[styles.italicFont, { color: colors.blue }]}
             onPress={() =>
-              navigation.navigate("User", { username: author.username })
+              navigation.navigate("User", { username: author.name })
             }
           >
-            {author?.username} ·{" "}
+            {author?.name} ·{" "}
           </Text>
           <Text style={[styles.dateText, { color: colors.text }]}>
             {moment(created).fromNow()}
@@ -113,31 +110,28 @@ const Post = (props: {
           </Text>
         </View>
         <View style={styles.headerRight}>
-          <TouchableOpacity onPress={() => (isUpVoted() ? unVote() : upVote())}>
+          {/*<TouchableOpacity onPress={() => (isUpVoted() ? unVote() : upVote())}>*/}
+          {score >= 0 ? (
             <ArrowUp
               width={22}
               height={22}
               strokeWidth={4}
-              color={isUpVoted() ? colors.green : colors.icon}
+              color={colors.icon}
             />
-          </TouchableOpacity>
+          ) : (
+            <ArrowDown
+              width={22}
+              height={22}
+              strokeWidth={4}
+              color={colors.icon}
+            />
+          )}
+          {/*</TouchableOpacity>*/}
           <Text style={[styles.score, { color: colors.text }]}>{score}</Text>
 
-          <View style={styles.centerAlign}>
-            <TouchableOpacity
-              onPress={() => (isDownVoted() ? unVote() : downVote())}
-            >
-              <ArrowDown
-                width={22}
-                height={22}
-                strokeWidth={4}
-                color={isDownVoted() ? colors.red : colors.icon}
-              />
-            </TouchableOpacity>
-          </View>
           <Text style={[styles.regularFont, { color: colors.text }]}>
             {"  "}
-            {category}{" "}
+            {categories.find(c => c.id === category)?.name}{" "}
           </Text>
 
           {deleteButton && author?.id === authState.userInfo.id && (
@@ -159,21 +153,18 @@ const Post = (props: {
       >
         {title}
       </Text>
-      <Text
+      {/*<Text
         numberOfLines={route.name === "PostDetail" ? 10000 : 10}
         style={[
           styles.regularFont,
           { color: colors.text },
-          type === "link" && route.name === "PostDetail" && styles.link,
         ]}
         onPress={() =>
-          route.name === "PostDetail" && type === "link"
-            ? Linking.openURL(url)
-            : navigation.navigate("PostDetail", { postId, category, comments })
+            navigation.navigate("PostDetail", { postId, category, comments })
         }
       >
-        {type === "link" ? url : text}
-      </Text>
+        {text}
+      </Text>*/}
       <View style={styles.bottomContainer}>
         <TouchableOpacity
           style={styles.centerAlign}
@@ -190,12 +181,9 @@ const Post = (props: {
             strokeWidth={3}
           />
           <Text style={[styles.commentText, { color: colors.text }]}>
-            {comments?.length}
+            {comments}
           </Text>
         </TouchableOpacity>
-        <Text style={[styles.italicFont, { color: colors.text }]}>
-          {views} views
-        </Text>
       </View>
     </SafeAreaView>
   );

@@ -8,12 +8,12 @@ import {
 } from "react-native";
 import { useTheme } from "@react-navigation/native";
 
-import categories from "../constants/categories";
 import { customTheme } from "../constants/default-theme";
+import { useCategories } from "../context/contentChangeContext";
 
 const CategoryPicker = (props: {
-  selectedCategory: string;
-  onClick?: (e: string) => void;
+  selectedCategory: number;
+  onClick?: (e: number) => void;
   addAll?: boolean;
   setFieldValue?: (
     field: string,
@@ -22,37 +22,33 @@ const CategoryPicker = (props: {
   ) => void;
 }) => {
   const { colors } = useTheme() as customTheme;
-  const { selectedCategory, onClick, addAll, setFieldValue } = props;
+  const { selectedCategory, onClick, setFieldValue } = props;
+  const categories = useCategories();
   return (
     <View {...props}>
       <FlatList
-        data={addAll ? ["all", ...categories] : categories}
+        data={categories}
         horizontal
-        keyExtractor={(item) => item}
+        keyExtractor={(item) => item.name}
         renderItem={({ item }) => (
           <TouchableOpacity
             onPress={() =>
-              (onClick && onClick(item)) ||
-              (setFieldValue && setFieldValue("category", item))
+              (onClick && onClick(item.id)) ||
+              (setFieldValue && setFieldValue("category", item.id))
             }
           >
             <Text
               style={[
                 styles.category,
                 {
-                  fontWeight: item === selectedCategory ? "bold" : "normal",
+                  fontWeight: item.id === selectedCategory ? "bold" : "normal",
                   borderBottomColor:
-                    item === selectedCategory
-                      ? colors.blue
-                      : "transparent",
-                  color:
-                    item === selectedCategory
-                      ? colors.blue
-                      : colors.text,
+                    item.id === selectedCategory ? colors.blue : "transparent",
+                  color: item.id === selectedCategory ? colors.blue : colors.text,
                 },
               ]}
             >
-              {item}
+              {item.name}
             </Text>
           </TouchableOpacity>
         )}

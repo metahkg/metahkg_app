@@ -29,6 +29,7 @@ import { AuthContext } from "./context/authContext";
 import SplashScreen from "./views/authview/threescreen/SplashScreen";
 import SignInScreen from "./views/authview/threescreen/SignInScreen";
 import SignUpScreen from "./views/authview/threescreen/SignUpScreen";
+import FontAwesome from "react-native-vector-icons/FontAwesome";
 
 const Tab = createBottomTabNavigator();
 const Drawer = createDrawerNavigator();
@@ -74,6 +75,7 @@ function SignScreens() {
 
 function HomeScreens(props: { navigation: any }) {
   const { navigation } = props;
+  const { theme } = React.useContext(ThemeContext);
   console.log("navigation is received,", navigation);
   return (
     <HomeStack.Navigator
@@ -89,15 +91,18 @@ function HomeScreens(props: { navigation: any }) {
         options={{
           headerShown: true,
           headerLeft: () => (
-            <Icon.Button
-              name="ios-menu"
-              size={25}
-              backgroundColor="#009387"
+            <FontAwesome
+              name="bars"
+              size={20}
+              color={theme === "light" ? "black" : "white"}
+              style={{
+                marginLeft: 20,
+              }}
               onPress={() => {
                 console.log("trying open drawer");
                 navigation.openDrawer();
               }}
-            ></Icon.Button>
+            />
           ),
         }}
       />

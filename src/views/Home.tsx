@@ -3,7 +3,7 @@ import { FlatList, StatusBar, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useTheme } from "@react-navigation/native";
 
-import axios from "../utils/fetcher";
+import axios, { api } from "../utils/fetcher";
 import { AuthContext } from "../context/authContext";
 import { ThemeContext } from "../context/themeSwichContext";
 
@@ -20,14 +20,12 @@ const Home = () => {
   const { colors } = useTheme() as customTheme;
 
   const [postData, setPostData] = React.useState<postType | null>(null);
-  const [category, setCategory] = React.useState("all");
+  const [category, setCategory] = React.useState(1);
   const [isLoading, setIsLoading] = React.useState(false);
 
   const getPostData = React.useCallback(async () => {
     setIsLoading(true);
-    const { data } = await axios.get(
-      !category || category === "all" ? "posts" : `posts/${category}`
-    );
+    const { data } = await api.get(`menu/${Number(category) || 1}`);
     setPostData(data);
     setIsLoading(false);
   }, [category]);
@@ -51,11 +49,7 @@ const Home = () => {
           onRefresh={() => getPostData()}
           keyExtractor={(item) => item.id}
           ListHeaderComponent={
-            <CategoryPicker
-              selectedCategory={category}
-              onClick={setCategory}
-              addAll
-            />
+            <CategoryPicker selectedCategory={category} onClick={setCategory} />
           }
           ListHeaderComponentStyle={[
             styles.categoryPicker,
@@ -70,17 +64,14 @@ const Home = () => {
             <Post
               postId={item.id}
               userId={authState.userInfo.id}
-              score={item.score}
-              type={item.type}
+              score={item.vote}
               title={item.title}
-              author={item.author}
+              author={item.op}
               category={item.category}
-              text={item.text}
-              comments={item.comments}
-              created={item.created}
-              url={item.url}
-              votes={item.votes}
-              views={item.views}
+              //text={item.conversation?.[0]}
+              comments={item.c}
+              created={item.lastModified}
+              //votes={}
               setIsLoading={setIsLoading}
               setData={setPostData}
               deleteButton={false}

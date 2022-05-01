@@ -20,6 +20,7 @@ import Users from "../model/users";
 import axios, { api } from "../../../utils/fetcher";
 import { AuthContext } from "../../../context/authContext";
 import { jwtTokenType } from "../../../types/user";
+import MetahkgLogo from "../../../components/Metahkglogo";
 
 const SignInScreen = (props: { navigation: any }) => {
   const { navigation } = props;
@@ -38,7 +39,7 @@ const SignInScreen = (props: { navigation: any }) => {
   // const {signIn} = React.useContext(AuthContext);
 
   const textInputChange = (val: string) => {
-    if (val.trim().length >= 4) {
+    if (val.match(/^\S{1,15}$/)) {
       setData({
         ...data,
         username: val,
@@ -79,7 +80,7 @@ const SignInScreen = (props: { navigation: any }) => {
   };
 
   const handleValidUser = (val: string) => {
-    if (val.trim().length >= 4) {
+    if (val.match(/^\S{1,15}$/)) {
       setData({
         ...data,
         isValidUser: true,
@@ -97,7 +98,7 @@ const SignInScreen = (props: { navigation: any }) => {
       name: userName,
       pwd: hash.sha256().update(password).digest("hex"),
     };
-    console.log(values)
+    console.log(values);
 
     try {
       const { data } = await api.post("/users/signin", values);
@@ -136,8 +137,9 @@ const SignInScreen = (props: { navigation: any }) => {
 
   return (
     <View style={styles.container}>
-      <StatusBar backgroundColor="#009387" barStyle="light-content" />
+      <StatusBar backgroundColor="#ffc100" barStyle="light-content" />
       <View style={styles.header}>
+        <MetahkgLogo height={50} width={40} sx={styles.tinylogo} light />
         <Text style={styles.text_header}>Welcome!</Text>
       </View>
       <Animatable.View
@@ -183,7 +185,7 @@ const SignInScreen = (props: { navigation: any }) => {
         {data.isValidUser ? null : (
           <Animatable.View animation="fadeInLeft" duration={500}>
             <Text style={styles.errorMsg}>
-              Username must be 4 characters long.
+              Username must be 1 - 15 characters long, and without any spaces.
             </Text>
           </Animatable.View>
         )}
@@ -230,11 +232,11 @@ const SignInScreen = (props: { navigation: any }) => {
           </Animatable.View>
         )}
 
-        <TouchableOpacity>
-          <Text style={{ color: "#009387", marginTop: 15 }}>
+        {/*<TouchableOpacity>
+          <Text style={{ color: "#f5bd15", marginTop: 15 }}>
             Forgot password?
           </Text>
-        </TouchableOpacity>
+        </TouchableOpacity>*/}
         <View style={styles.button}>
           <TouchableOpacity
             style={styles.signIn}
@@ -243,7 +245,7 @@ const SignInScreen = (props: { navigation: any }) => {
             }}
           >
             <LinearGradient
-              colors={["#08d4c4", "#01ab9d"]}
+              colors={["#ffc100", "#f5bd1f"]}
               style={styles.signIn}
             >
               <Text
@@ -264,7 +266,7 @@ const SignInScreen = (props: { navigation: any }) => {
             style={[
               styles.signIn,
               {
-                borderColor: "#009387",
+                borderColor: "#ffc100",
                 borderWidth: 1,
                 marginTop: 15,
               },
@@ -274,7 +276,7 @@ const SignInScreen = (props: { navigation: any }) => {
               style={[
                 styles.textSign,
                 {
-                  color: "#009387",
+                  color: "#f5bd1f",
                 },
               ]}
             >
@@ -292,11 +294,12 @@ export default SignInScreen;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#009387",
+    backgroundColor: "#333",
   },
   header: {
     flex: 1,
-    justifyContent: "flex-end",
+    flexDirection: "row",
+    alignItems: "flex-end",
     paddingHorizontal: 20,
     paddingBottom: 50,
   },
@@ -335,7 +338,7 @@ const styles = StyleSheet.create({
     flex: 1,
     marginTop: Platform.OS === "ios" ? 0 : -12,
     paddingLeft: 10,
-    color: "#05375a",
+    color: "#ffc100",
   },
   errorMsg: {
     color: "#FF0000",
@@ -355,5 +358,9 @@ const styles = StyleSheet.create({
   textSign: {
     fontSize: 18,
     fontWeight: "bold",
+  },
+  tinylogo: {
+    width: 40,
+    height: 50,
   },
 });

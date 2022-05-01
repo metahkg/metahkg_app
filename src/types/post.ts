@@ -1,3 +1,16 @@
+import { userType } from "./user";
+
+export type summaryType = {
+  id: number;
+  op: userType;
+  c: number;
+  vote: number;
+  slink: string;
+  title: string;
+  category: number;
+  lastModified: Date;
+  createdAt: Date;
+};
 export type authorType = {
   username: string;
   id: number;
@@ -5,7 +18,7 @@ export type authorType = {
 export type voteType = {
   user: number;
   vote: 1 | -1;
-}
+};
 export type commentType = {
   id: number;
   score: number;

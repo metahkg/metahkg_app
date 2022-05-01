@@ -21,6 +21,9 @@ import jwtDecode from "jwt-decode";
 import { jwtTokenType } from "../../../types/user";
 import RNPickerSelect from "react-native-picker-select";
 import hash from "hash.js";
+import MetahkgLogo from "../../../components/Metahkglogo";
+import EmailValidator from "email-validator";
+
 const SignInScreen = (props: { navigation: any }) => {
   const { navigation } = props;
   const { setStorage } = React.useContext(AuthContext);
@@ -40,7 +43,7 @@ const SignInScreen = (props: { navigation: any }) => {
   const recaptcha = useRef<RecaptchaHandles>(null);
 
   const usernameChange = (val: string) => {
-    if (val.length !== 0) {
+    if (val.match(/^\S{1,15}$/)) {
       setState({
         ...state,
         username: val,
@@ -56,7 +59,7 @@ const SignInScreen = (props: { navigation: any }) => {
   };
 
   const emailChange = (val: string) => {
-    if (val) {
+    if (EmailValidator.validate(val)) {
       setState({
         ...state,
         email: val,
@@ -170,7 +173,8 @@ const SignInScreen = (props: { navigation: any }) => {
     <View style={styles.container}>
       <StatusBar backgroundColor="#009387" barStyle="light-content" />
       <View style={styles.header}>
-        <Text style={styles.text_header}>Register Now!</Text>
+        <MetahkgLogo sx={styles.tinylogo} height={50} width={40} light />
+        <Text style={styles.text_header}>Register</Text>
       </View>
       <Animatable.View animation="fadeInUpBig" style={styles.footer}>
         <ScrollView>
@@ -190,16 +194,7 @@ const SignInScreen = (props: { navigation: any }) => {
             ) : null}
           </View>
 
-          <Text
-            style={[
-              styles.text_footer,
-              {
-                marginTop: 35,
-              },
-            ]}
-          >
-            Email
-          </Text>
+          <Text style={[styles.text_footer, styles.mt20]}>Email</Text>
           <View style={styles.action}>
             <FontAwesome name="envelope-o" color="#05375a" size={20} />
             <TextInput
@@ -210,12 +205,12 @@ const SignInScreen = (props: { navigation: any }) => {
             />
             {state.check_emailChange ? (
               <Animatable.View animation="bounceIn">
-                <Feather name="check-circle" color="green" size={20} />
+                <Feather name="check-circle" color="#ffc100" size={20} />
               </Animatable.View>
             ) : null}
           </View>
 
-          <Text style={[styles.text_footer, { marginTop: 35 }]}>Sex</Text>
+          <Text style={[styles.text_footer, styles.mt20]}>Sex</Text>
           <RNPickerSelect
             onValueChange={(value) => setState({ ...state, sex: value })}
             items={[
@@ -225,16 +220,7 @@ const SignInScreen = (props: { navigation: any }) => {
             value={state.sex}
           />
 
-          <Text
-            style={[
-              styles.text_footer,
-              {
-                marginTop: 35,
-              },
-            ]}
-          >
-            Password
-          </Text>
+          <Text style={[styles.text_footer, styles.mt20]}>Password</Text>
           <View style={styles.action}>
             <Feather name="lock" color="#05375a" size={20} />
             <TextInput
@@ -242,7 +228,7 @@ const SignInScreen = (props: { navigation: any }) => {
               secureTextEntry={state.secureTextEntry ? true : false}
               style={styles.textInput}
               autoCapitalize="none"
-              onChangeText={(val) => handlePasswordChange(val)}
+              onChangeText={handlePasswordChange}
             />
             <TouchableOpacity onPress={updateSecureTextEntry}>
               {state.secureTextEntry ? (
@@ -253,14 +239,7 @@ const SignInScreen = (props: { navigation: any }) => {
             </TouchableOpacity>
           </View>
 
-          <Text
-            style={[
-              styles.text_footer,
-              {
-                marginTop: 35,
-              },
-            ]}
-          >
+          <Text style={[styles.text_footer, styles.mt20]}>
             Confirm Password
           </Text>
           <View style={styles.action}>
@@ -270,7 +249,7 @@ const SignInScreen = (props: { navigation: any }) => {
               secureTextEntry={state.confirm_secureTextEntry ? true : false}
               style={styles.textInput}
               autoCapitalize="none"
-              onChangeText={(val) => handleConfirmPasswordChange(val)}
+              onChangeText={handleConfirmPasswordChange}
             />
             <TouchableOpacity onPress={updateConfirmSecureTextEntry}>
               {state.secureTextEntry ? (
@@ -280,7 +259,7 @@ const SignInScreen = (props: { navigation: any }) => {
               )}
             </TouchableOpacity>
           </View>
-          <View style={styles.textPrivate}>
+          <View style={styles.textPrivacy}>
             <Text style={styles.color_textPrivate}>
               By signing up you agree to our
             </Text>
@@ -332,7 +311,7 @@ const SignInScreen = (props: { navigation: any }) => {
               }}
             >
               <LinearGradient
-                colors={["#08d4c4", "#01ab9d"]}
+                colors={["#ffc100", "#f5bd1f"]}
                 style={styles.signIn}
               >
                 <Text
@@ -353,7 +332,7 @@ const SignInScreen = (props: { navigation: any }) => {
               style={[
                 styles.signIn,
                 {
-                  borderColor: "#009387",
+                  borderColor: "#ffc100",
                   borderWidth: 1,
                   marginTop: 15,
                 },
@@ -363,7 +342,7 @@ const SignInScreen = (props: { navigation: any }) => {
                 style={[
                   styles.textSign,
                   {
-                    color: "#009387",
+                    color: "#f5bd1f",
                   },
                 ]}
               >
@@ -382,13 +361,14 @@ export default SignInScreen;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#009387",
+    backgroundColor: "#333",
   },
   header: {
     flex: 1,
-    justifyContent: "flex-end",
+    alignItems: "flex-end",
     paddingHorizontal: 20,
     paddingBottom: 50,
+    flexDirection: "row"
   },
   footer: {
     flex: Platform.OS === "ios" ? 3 : 5,
@@ -418,11 +398,11 @@ const styles = StyleSheet.create({
     flex: 1,
     marginTop: Platform.OS === "ios" ? 0 : -12,
     paddingLeft: 10,
-    color: "#05375a",
+    color: "#f5bd1f",
   },
   button: {
     alignItems: "center",
-    marginTop: 50,
+    marginTop: 20,
   },
   signIn: {
     width: "100%",
@@ -435,12 +415,19 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: "bold",
   },
-  textPrivate: {
+  textPrivacy: {
     flexDirection: "row",
     flexWrap: "wrap",
     marginTop: 20,
   },
   color_textPrivate: {
     color: "grey",
+  },
+  tinylogo: {
+    width: 40,
+    height: 50,
+  },
+  mt20: {
+    marginTop: 20,
   },
 });

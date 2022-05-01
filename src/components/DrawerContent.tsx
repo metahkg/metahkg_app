@@ -1,5 +1,6 @@
 import React from "react";
 import { ScrollViewProps, StyleSheet, View } from "react-native";
+import { ThemeContext } from "../context/themeSwichContext";
 import {
   Avatar,
   Caption,
@@ -9,12 +10,14 @@ import {
   Text,
   Title,
   TouchableRipple,
-  useTheme,
+  useTheme as usePaperTheme,
 } from "react-native-paper";
+import { useTheme } from "@react-navigation/native";
 import { DrawerContentScrollView, DrawerItem } from "@react-navigation/drawer";
 
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import { AuthContext } from "../context/authContext";
+import { customTheme } from "../constants/default-theme";
 
 // import { AuthContext } from "../components/context";
 
@@ -22,8 +25,10 @@ export function DrawerContent(props: {
   children: React.ReactNode;
   navigation: any;
 }) {
-  const paperTheme = useTheme();
+  const paperTheme = usePaperTheme();
   const { signOut, authState } = React.useContext(AuthContext);
+  const { theme, changeTheme } = React.useContext(ThemeContext);
+  const { colors } = useTheme() as customTheme;
   // const { signOut, toggleTheme } = React.useContext(AuthContext);
   // console.log("props.state.route",props)
   console.log("drawer called");
@@ -116,14 +121,14 @@ export function DrawerContent(props: {
           <Drawer.Section title="Preferences">
             <TouchableRipple
               onPress={() => {
-                alert("not yet implemented");
+                changeTheme(theme === "light" ? "dark" : "light");
               }}
             >
               <View style={styles.preference}>
                 <Text
                   onPressIn={() => {}}
                   onPressOut={() => {}}
-                  style={styles.title}
+                  style={[styles.title, { color: colors.text }]}
                 >
                   Dark Theme
                 </Text>

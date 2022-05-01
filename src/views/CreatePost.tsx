@@ -87,7 +87,7 @@ const CreatePost = () => {
       <Formik
         initialValues={{
           type: "text",
-          category: "",
+          category: 1,
           title: "",
           url: "",
           text: "",
