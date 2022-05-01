@@ -1,8 +1,8 @@
 {
   "expo": {
-    "name": "reddit-clone-typescript-blank",
-    "slug": "reddit-clone-typescript-blank",
-    "version": "1.0.3",
+    "name": "metahkg-app",
+    "slug": "metahkg-app",
+    "version": "0.0.1",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "splash": {
@@ -13,12 +13,10 @@
     "updates": {
       "fallbackToCacheTimeout": 0
     },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
+    "assetBundlePatterns": ["**/*"],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.gg.redditclonetypescriptblank"
+      "bundleIdentifier": "org.metahkg.app"
     },
     "android": {
       "versionCode": 3,
@@ -26,10 +24,25 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#FFFFFF"
       },
-      "package": "com.gg.redditclonetypescriptblank"
+      "package": "org.metahkg.app"
     },
     "web": {
       "favicon": "./assets/favicon.png"
+    }
+  },
+  "build": {
+    "preview": {
+      "android": {
+        "buildType": "apk"
+      }
+    },
+    "preview2": {
+      "android": {
+        "gradleCommand": ":app:assembleRelease"
+      }
+    },
+    "preview3": {
+      "developmentClient": true
     }
   }
 }
