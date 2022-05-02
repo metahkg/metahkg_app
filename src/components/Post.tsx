@@ -21,15 +21,12 @@ import { useCategories } from "../context/contentChangeContext";
 
 const Post = (props: {
   postId: number;
-  userId: number;
   score: number;
   title: string;
   author: userType;
   category: number;
-  //text: string;
   comments: number;
   created: number;
-  //votes: any[];
   setIsLoading: React.Dispatch<SetStateAction<boolean>>;
   setData: React.Dispatch<SetStateAction<postType | null>>;
   postType?: string;
@@ -38,15 +35,12 @@ const Post = (props: {
 }) => {
   const {
     postId,
-    userId,
     score,
     title,
     author,
     category,
-    //text,
     comments,
     created,
-    //votes,
     setIsLoading,
     setData,
     deleteButton,
@@ -56,36 +50,6 @@ const Post = (props: {
   const navigation = useNavigation();
   const { authState } = React.useContext(AuthContext);
   const categories = useCategories();
-  const route = useRoute();
-
-  /*const isUpVoted = () => {
-    return votes.find((v) => v.user === userId)?.vote === 1;
-  };
-
-  const isDownVoted = () => {
-    return votes.find((v) => v.user === userId)?.vote === -1;
-  };*/
-
-  const upVote = async () => {
-    setIsLoading(true);
-    const { data } = await axios.get(`post/${postId}/upvote`);
-    setData(data);
-    setIsLoading(false);
-  };
-
-  const downVote = async () => {
-    setIsLoading(true);
-    const { data } = await axios.get(`post/${postId}/downvote`);
-    setData(data);
-    setIsLoading(false);
-  };
-
-  const unVote = async () => {
-    setIsLoading(true);
-    const { data } = await axios.get(`post/${postId}/unvote`);
-    setData(data);
-    setIsLoading(false);
-  };
 
   return (
     <SafeAreaView
@@ -137,7 +101,7 @@ const Post = (props: {
             {categories.find((c) => c.id === category)?.name}{" "}
           </Text>
 
-          {deleteButton && author?.id === authState.userInfo.id && (
+          {deleteButton && author?.id === authState.userInfo?.id && (
             <TouchableOpacity
               style={styles.trash}
               activeOpacity={0.5}

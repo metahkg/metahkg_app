@@ -14,13 +14,15 @@ import { LinearGradient } from "expo-linear-gradient";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import Feather from "react-native-vector-icons/Feather";
 import hash from "hash.js";
-import { useTheme } from "react-native-paper";
+import { useTheme } from "@react-navigation/native";
 import jwtDecode from "jwt-decode";
 import Users from "../model/users";
 import axios, { api } from "../../../utils/fetcher";
 import { AuthContext } from "../../../context/authContext";
 import { jwtTokenType } from "../../../types/user";
 import MetahkgLogo from "../../../components/Metahkglogo";
+import { customTheme } from "../../../constants/default-theme";
+import { styles } from "./styles/signin.styles";
 
 const SignInScreen = (props: { navigation: any }) => {
   const { navigation } = props;
@@ -34,7 +36,7 @@ const SignInScreen = (props: { navigation: any }) => {
     isValidPassword: true,
   });
 
-  const { colors } = useTheme();
+  const { colors } = useTheme() as customTheme;
 
   // const {signIn} = React.useContext(AuthContext);
 
@@ -98,47 +100,22 @@ const SignInScreen = (props: { navigation: any }) => {
       name: userName,
       pwd: hash.sha256().update(password).digest("hex"),
     };
-    console.log(values);
-
     try {
       const { data } = await api.post("/users/signin", values);
       const { token } = data;
       const decoded = jwtDecode(token) as jwtTokenType;
-      console.log(decoded);
       const expiresAt = decoded?.exp;
       const userInfo = decoded;
       setStorage(token, expiresAt, userInfo);
-      // navigation.navigate('Home')
-      // resetForm({})
     } catch (error) {
-      console.log("error in login", error);
-      // setStatus(error.response.data.message)
+      Alert.alert("Error", "Invalid username or password");
     }
-
-    // const foundUser = Users.filter(item => {
-    //     return userName == item.username && password == item.password;
-    // });
-    //
-    // if (data.username.length == 0 || data.password.length == 0) {
-    //     Alert.alert("Wrong Input!", "Username or password field cannot be empty.", [
-    //         {text: "Okay"},
-    //     ]);
-    //     return;
-    // }
-    //
-    // if (foundUser.length == 0) {
-    //     Alert.alert("Invalid User!", "Username or password is incorrect.", [
-    //         {text: "Okay"},
-    //     ]);
-    //     return;
-    // }
-    // signIn(foundUser);
   };
 
   return (
     <View style={styles.container}>
-      <StatusBar backgroundColor="#ffc100" barStyle="light-content" />
-      <View style={styles.header}>
+      <StatusBar backgroundColor={colors.dark} barStyle="light-content" />
+      <View style={[styles.header, { backgroundColor: colors.dark }]}>
         <MetahkgLogo height={50} width={40} sx={styles.tinylogo} light />
         <Text style={styles.text_header}>Welcome!</Text>
       </View>
@@ -165,7 +142,7 @@ const SignInScreen = (props: { navigation: any }) => {
           <FontAwesome name="user-o" color={colors.text} size={20} />
           <TextInput
             placeholder="Your Username"
-            placeholderTextColor="#666666"
+            placeholderTextColor={colors.grey}
             style={[
               styles.textInput,
               {
@@ -205,7 +182,7 @@ const SignInScreen = (props: { navigation: any }) => {
           <Feather name="lock" color={colors.text} size={20} />
           <TextInput
             placeholder="Your Password"
-            placeholderTextColor="#666666"
+            placeholderTextColor={colors.grey}
             secureTextEntry={data.secureTextEntry ? true : false}
             style={[
               styles.textInput,
@@ -276,7 +253,7 @@ const SignInScreen = (props: { navigation: any }) => {
               style={[
                 styles.textSign,
                 {
-                  color: "#f5bd1f",
+                  color: colors.yellow2,
                 },
               ]}
             >
@@ -290,77 +267,3 @@ const SignInScreen = (props: { navigation: any }) => {
 };
 
 export default SignInScreen;
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#333",
-  },
-  header: {
-    flex: 1,
-    flexDirection: "row",
-    alignItems: "flex-end",
-    paddingHorizontal: 20,
-    paddingBottom: 50,
-  },
-  footer: {
-    flex: 3,
-    backgroundColor: "#fff",
-    borderTopLeftRadius: 30,
-    borderTopRightRadius: 30,
-    paddingHorizontal: 20,
-    paddingVertical: 30,
-  },
-  text_header: {
-    color: "#fff",
-    fontWeight: "bold",
-    fontSize: 30,
-  },
-  text_footer: {
-    color: "#05375a",
-    fontSize: 18,
-  },
-  action: {
-    flexDirection: "row",
-    marginTop: 10,
-    borderBottomWidth: 1,
-    borderBottomColor: "#f2f2f2",
-    paddingBottom: 5,
-  },
-  actionError: {
-    flexDirection: "row",
-    marginTop: 10,
-    borderBottomWidth: 1,
-    borderBottomColor: "#FF0000",
-    paddingBottom: 5,
-  },
-  textInput: {
-    flex: 1,
-    marginTop: Platform.OS === "ios" ? 0 : -12,
-    paddingLeft: 10,
-    color: "#ffc100",
-  },
-  errorMsg: {
-    color: "#FF0000",
-    fontSize: 14,
-  },
-  button: {
-    alignItems: "center",
-    marginTop: 50,
-  },
-  signIn: {
-    width: "100%",
-    height: 50,
-    justifyContent: "center",
-    alignItems: "center",
-    borderRadius: 10,
-  },
-  textSign: {
-    fontSize: 18,
-    fontWeight: "bold",
-  },
-  tinylogo: {
-    width: 40,
-    height: 50,
-  },
-});

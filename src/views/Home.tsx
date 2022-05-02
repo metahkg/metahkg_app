@@ -60,10 +60,9 @@ const Home = () => {
               Ups! Not found any post!
             </Text>
           }
-          renderItem={({ item, index }) => (
+          renderItem={({ item }) => (
             <Post
               postId={item.id}
-              userId={authState.userInfo.id}
               score={item.vote}
               title={item.title}
               author={item.op}

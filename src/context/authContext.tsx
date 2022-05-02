@@ -1,12 +1,33 @@
 import React from "react";
 // import AsyncStorage from '@react-native-community/async-storage'
 import AsyncStorage from "@react-native-async-storage/async-storage";
-const AuthContext = React.createContext<any>(null);
+import { userType } from "../types/user";
+const AuthContext = React.createContext<{
+  authState: {
+    userInfo: userType | null;
+    token: string | null;
+    expiresAt: number | null;
+  };
+  signOut: () => void;
+  setStorage: (
+    token: string,
+    expiresAt: number,
+    userInfo: userType
+  ) => Promise<void>;
+}>({
+  signOut: () => {},
+  authState: { userInfo: null, token: null, expiresAt: null },
+  setStorage: async () => {},
+});
 const { Provider } = AuthContext;
 
 const AuthProvider = (props: { children: JSX.Element | JSX.Element[] }) => {
   const { children } = props;
-  const [authState, setAuthState] = React.useState({});
+  const [authState, setAuthState] = React.useState<{
+    userInfo: userType | null;
+    token: string | null;
+    expiresAt: number | null;
+  }>({ userInfo: null, token: null, expiresAt: null });
 
   React.useEffect(() => {
     const bootstrapAsync = async () => {
@@ -24,8 +45,8 @@ const AuthProvider = (props: { children: JSX.Element | JSX.Element[] }) => {
       }
 
       setAuthState({
-        token,
-        expiresAt,
+        token: token || "",
+        expiresAt: Number(expiresAt),
         userInfo: userInfo ? JSON.parse(userInfo) : {},
       });
     };
@@ -35,8 +56,8 @@ const AuthProvider = (props: { children: JSX.Element | JSX.Element[] }) => {
 
   const setStorage = async (
     token: string,
-    expiresAt: string,
-    userInfo: Object
+    expiresAt: number,
+    userInfo: userType
   ) => {
     try {
       await AsyncStorage.setItem("token", token);
@@ -58,7 +79,7 @@ const AuthProvider = (props: { children: JSX.Element | JSX.Element[] }) => {
       console.log(error);
     }
 
-    setAuthState({ token: null, expiresAt: null, userInfo: {} });
+    setAuthState({ token: null, expiresAt: null, userInfo: null });
   };
 
   return (

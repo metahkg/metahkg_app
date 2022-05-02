@@ -11,14 +11,15 @@ import * as Animatable from "react-native-animatable";
 import { LinearGradient } from "expo-linear-gradient";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import { useTheme } from "@react-navigation/native";
+import { customTheme } from "../../../constants/default-theme";
 
 const SplashScreen = (props: { navigation: any }) => {
   const { navigation } = props;
-  const { colors } = useTheme();
+  const { colors } = useTheme() as customTheme;
 
   return (
     <View style={styles.container}>
-      <StatusBar backgroundColor="#009387" barStyle="light-content" />
+      <StatusBar backgroundColor="#222" barStyle="light-content" />
       <View style={styles.header}>
         <Animatable.Image
           animation="bounceIn"
@@ -47,11 +48,11 @@ const SplashScreen = (props: { navigation: any }) => {
         >
           Stay connected with everyone!
         </Text>
-        <Text style={styles.text}>Sign in with account</Text>
+        <Text style={styles.text}>Sign in to Metahkg.</Text>
         <View style={styles.button}>
           <TouchableOpacity onPress={() => navigation.navigate("SignInScreen")}>
             <LinearGradient
-              colors={["#08d4c4", "#01ab9d"]}
+              colors={[colors.yellow2, colors.yellow]}
               style={styles.signIn}
             >
               <Text style={styles.textSign}>Get Started</Text>
@@ -72,7 +73,7 @@ const height_logo = height * 0.28;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#009387",
+    backgroundColor: "#222",
   },
   header: {
     flex: 2,

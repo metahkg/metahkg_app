@@ -1,16 +1,13 @@
 import React from "react";
-import { ScrollViewProps, StyleSheet, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 import { ThemeContext } from "../context/themeSwichContext";
 import {
   Avatar,
   Caption,
   Drawer,
-  Paragraph,
   Switch,
   Text,
   Title,
-  TouchableRipple,
-  useTheme as usePaperTheme,
 } from "react-native-paper";
 import { useTheme } from "@react-navigation/native";
 import { DrawerContentScrollView, DrawerItem } from "@react-navigation/drawer";
@@ -19,51 +16,36 @@ import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import { AuthContext } from "../context/authContext";
 import { customTheme } from "../constants/default-theme";
 
-// import { AuthContext } from "../components/context";
-
-export function DrawerContent(props: {
-  children: React.ReactNode;
-  navigation: any;
-}) {
-  const paperTheme = usePaperTheme();
+export function DrawerContent(props: { navigation: any }) {
   const { signOut, authState } = React.useContext(AuthContext);
   const { theme, changeTheme } = React.useContext(ThemeContext);
   const { colors } = useTheme() as customTheme;
-  // const { signOut, toggleTheme } = React.useContext(AuthContext);
-  // console.log("props.state.route",props)
-  console.log("drawer called");
+
   return (
     <View style={{ flex: 1 }}>
       <DrawerContentScrollView {...props}>
         <View style={styles.drawerContent}>
           <View style={styles.userInfoSection}>
-            <View style={{ flexDirection: "row", marginTop: 15 }}>
+            <View
+              style={{
+                flexDirection: "row",
+                marginTop: 15,
+                alignItems: "center",
+              }}
+            >
               <Avatar.Image
                 source={{
-                  uri: "https://api.adorable.io/avatars/50/abott@adorable.png",
+                  uri: `https://dev.metahkg.org/api/avatars/${authState.userInfo?.id}`,
                 }}
                 size={50}
               />
               <View style={{ marginLeft: 15, flexDirection: "column" }}>
-                <Title style={styles.title}>
-                  {authState.userInfo.username}
+                <Title style={[styles.title, { color: colors.text }]}>
+                  {authState.userInfo?.name}
                 </Title>
-                <Caption style={styles.caption}>@j_doe</Caption>
-              </View>
-            </View>
-
-            <View style={styles.row}>
-              <View style={styles.section}>
-                <Paragraph style={[styles.paragraph, styles.caption]}>
-                  80
-                </Paragraph>
-                <Caption style={styles.caption}>Following</Caption>
-              </View>
-              <View style={styles.section}>
-                <Paragraph style={[styles.paragraph, styles.caption]}>
-                  100
-                </Paragraph>
-                <Caption style={styles.caption}>Followers</Caption>
+                <Caption style={[styles.caption, { color: colors.text }]}>
+                  #{authState.userInfo?.id}
+                </Caption>
               </View>
             </View>
           </View>
@@ -80,9 +62,9 @@ export function DrawerContent(props: {
             />
             <DrawerItem
               icon={({ color, size }) => (
-                <Icon name="account-outline" color={color} size={size} />
+                <Icon name="pencil-outline" color={color} size={size} />
               )}
-              label="add post"
+              label="Create post"
               onPress={() => {
                 props.navigation.navigate("CreatePost");
               }}
@@ -92,51 +74,37 @@ export function DrawerContent(props: {
               icon={({ color, size }) => (
                 <Icon name="account-outline" color={color} size={size} />
               )}
-              label="user"
+              label="Profile"
               onPress={() => {
                 props.navigation.navigate("User");
               }}
             />
             <DrawerItem
               icon={({ color, size }) => (
-                <Icon name="account-outline" color={color} size={size} />
+                <Icon name="cog-outline" color={color} size={size} />
               )}
-              label="setting"
+              label="Settings"
               onPress={() => {
                 props.navigation.navigate("Setting");
               }}
             />
-            <DrawerItem
-              icon={({ color, size }) => (
-                <Icon name="account-outline" color={color} size={size} />
-              )}
-              label="Singout"
-              onPress={() => {
-                signOut();
-
-                props.navigation.navigate("Home");
-              }}
-            />
           </Drawer.Section>
           <Drawer.Section title="Preferences">
-            <TouchableRipple
-              onPress={() => {
-                changeTheme(theme === "light" ? "dark" : "light");
-              }}
-            >
-              <View style={styles.preference}>
-                <Text
-                  onPressIn={() => {}}
-                  onPressOut={() => {}}
-                  style={[styles.title, { color: colors.text }]}
-                >
-                  Dark Theme
-                </Text>
-                <View pointerEvents="none">
-                  <Switch value={paperTheme.dark} />
-                </View>
-              </View>
-            </TouchableRipple>
+            <View style={styles.preference}>
+              <Text
+                onPressIn={() => {}}
+                onPressOut={() => {}}
+                style={[styles.title, { color: colors.text }]}
+              >
+                Dark Theme
+              </Text>
+              <Switch
+                onChange={() => {
+                  changeTheme(theme === "light" ? "dark" : "light");
+                }}
+                value={theme === "dark"}
+              />
+            </View>
           </Drawer.Section>
         </View>
       </DrawerContentScrollView>
@@ -163,8 +131,8 @@ const styles = StyleSheet.create({
     paddingLeft: 20,
   },
   title: {
-    fontSize: 16,
-    marginTop: 3,
+    fontSize: 15,
+    margin: 0,
     fontWeight: "bold",
   },
   caption: {
@@ -194,8 +162,10 @@ const styles = StyleSheet.create({
     borderTopWidth: 1,
   },
   preference: {
+    display: "flex",
     flexDirection: "row",
     justifyContent: "space-between",
+    alignItems: "center",
     paddingVertical: 12,
     paddingHorizontal: 16,
   },

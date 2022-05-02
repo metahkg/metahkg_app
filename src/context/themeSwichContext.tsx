@@ -1,29 +1,30 @@
-import React from "react";
-// import AsyncStorage from '@react-native-community/async-storage'
+import React, { useState } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-const ThemeContext = React.createContext<any>(null);
+const ThemeContext = React.createContext<{
+  theme: "light" | "dark";
+  changeTheme: (value: "light" | "dark") => Promise<void>;
+}>({
+  theme: "light",
+  changeTheme: () => Promise.resolve(),
+});
 const { Provider } = ThemeContext;
 
 const ThemeProvider = (props: { children: JSX.Element | JSX.Element[] }) => {
   const { children } = props;
-  const [theme, setTheme] = React.useState("light");
+  const [theme, setTheme] = useState<"light" | "dark">("light");
 
   React.useEffect(() => {
-    const bootstrapAsync = async () => {
+    (async () => {
       try {
         const theme = await AsyncStorage.getItem("theme");
-        if (theme) {
-          setTheme(theme);
-        }
+        if (theme === "light" || theme === "dark") setTheme(theme);
       } catch (error) {
         console.log(error);
       }
-    };
-
-    bootstrapAsync();
+    })();
   }, []);
 
-  const changeTheme = async (value: string) => {
+  const changeTheme = async (value: "light" | "dark") => {
     setTheme(value);
     try {
       await AsyncStorage.setItem("theme", value);
