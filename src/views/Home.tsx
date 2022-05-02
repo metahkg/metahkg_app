@@ -57,7 +57,7 @@ const Home = () => {
           ]}
           ListEmptyComponent={
             <Text style={[styles.empty, { color: colors.text }]}>
-              Ups! Not found any post!
+              Not posts found!
             </Text>
           }
           renderItem={({ item }) => (

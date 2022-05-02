@@ -46,7 +46,6 @@ function SignScreens() {
 function HomeScreens(props: { navigation: any }) {
   const { navigation } = props;
   const { theme } = React.useContext(ThemeContext);
-  console.log("navigation is received,", navigation);
   return (
     <HomeStack.Navigator>
       <HomeStack.Screen
@@ -56,8 +55,8 @@ function HomeScreens(props: { navigation: any }) {
           headerShown: true,
           headerLeft: () => (
             <TouchableOpacity
+              style={{ padding: 10 }}
               onPress={() => {
-                console.log("trying open drawer");
                 navigation.openDrawer();
               }}
             >
@@ -66,7 +65,7 @@ function HomeScreens(props: { navigation: any }) {
                 size={20}
                 color={theme === "light" ? "black" : "white"}
                 style={{
-                  marginLeft: 20,
+                  marginLeft: 10,
                 }}
               />
             </TouchableOpacity>

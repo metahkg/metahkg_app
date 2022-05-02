@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext } from "react";
 import {
   Dimensions,
   StatusBar,
@@ -10,12 +10,16 @@ import {
 import * as Animatable from "react-native-animatable";
 import { LinearGradient } from "expo-linear-gradient";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
+import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
+
 import { useTheme } from "@react-navigation/native";
 import { customTheme } from "../../../constants/default-theme";
+import { ThemeContext } from "../../../context/themeSwichContext";
 
 const SplashScreen = (props: { navigation: any }) => {
   const { navigation } = props;
   const { colors } = useTheme() as customTheme;
+  const { theme, changeTheme } = useContext(ThemeContext);
 
   return (
     <View style={styles.container}>
@@ -46,19 +50,43 @@ const SplashScreen = (props: { navigation: any }) => {
             },
           ]}
         >
-          Stay connected with everyone!
+          Metahkg Forum
         </Text>
         <Text style={styles.text}>Sign in to Metahkg.</Text>
-        <View style={styles.button}>
-          <TouchableOpacity onPress={() => navigation.navigate("SignInScreen")}>
-            <LinearGradient
-              colors={[colors.yellow2, colors.yellow]}
-              style={styles.signIn}
-            >
-              <Text style={styles.textSign}>Get Started</Text>
-              <MaterialIcons name="navigate-next" color="#fff" size={20} />
-            </LinearGradient>
+
+        <View
+          style={{
+            display: "flex",
+            flexDirection: "row",
+            alignItems: "center",
+            justifyContent: "space-between",
+            marginTop: 30
+          }}
+        >
+          <TouchableOpacity
+            onPress={() => {
+              changeTheme(theme === "light" ? "dark" : "light");
+            }}
+          >
+            <MaterialCommunityIcons
+              name={theme === "light" ? "weather-night" : "weather-sunny"}
+              color={colors.text}
+              size={30}
+            />
           </TouchableOpacity>
+          <View>
+            <TouchableOpacity
+              onPress={() => navigation.navigate("SignInScreen")}
+            >
+              <LinearGradient
+                colors={[colors.yellow2, colors.yellow]}
+                style={styles.signIn}
+              >
+                <Text style={styles.textSign}>Get Started</Text>
+                <MaterialIcons name="navigate-next" color="#fff" size={20} />
+              </LinearGradient>
+            </TouchableOpacity>
+          </View>
         </View>
       </Animatable.View>
     </View>
@@ -100,10 +128,6 @@ const styles = StyleSheet.create({
   text: {
     color: "grey",
     marginTop: 5,
-  },
-  button: {
-    alignItems: "flex-end",
-    marginTop: 30,
   },
   signIn: {
     width: 150,

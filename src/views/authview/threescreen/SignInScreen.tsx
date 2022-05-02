@@ -1,9 +1,8 @@
-import React from "react";
+import React, { useState } from "react";
 import {
+  ActivityIndicator,
   Alert,
-  Platform,
   StatusBar,
-  StyleSheet,
   Text,
   TextInput,
   TouchableOpacity,
@@ -16,13 +15,14 @@ import Feather from "react-native-vector-icons/Feather";
 import hash from "hash.js";
 import { useTheme } from "@react-navigation/native";
 import jwtDecode from "jwt-decode";
-import Users from "../model/users";
-import axios, { api } from "../../../utils/fetcher";
+import { api } from "../../../utils/fetcher";
 import { AuthContext } from "../../../context/authContext";
 import { jwtTokenType } from "../../../types/user";
 import MetahkgLogo from "../../../components/Metahkglogo";
 import { customTheme } from "../../../constants/default-theme";
 import { styles } from "./styles/signin.styles";
+import { Type } from "@sinclair/typebox";
+import { ajv } from "../../../utils/ajv";
 
 const SignInScreen = (props: { navigation: any }) => {
   const { navigation } = props;
@@ -35,43 +35,27 @@ const SignInScreen = (props: { navigation: any }) => {
     isValidUser: true,
     isValidPassword: true,
   });
+  const [loading, setLoading] = useState(false);
 
   const { colors } = useTheme() as customTheme;
 
-  // const {signIn} = React.useContext(AuthContext);
-
   const textInputChange = (val: string) => {
-    if (val.match(/^\S{1,15}$/)) {
-      setData({
-        ...data,
-        username: val,
-        check_textInputChange: true,
-        isValidUser: true,
-      });
-    } else {
-      setData({
-        ...data,
-        username: val,
-        check_textInputChange: false,
-        isValidUser: false,
-      });
-    }
+    const valid = Boolean(val.match(/^\S{1,15}$/));
+    setData({
+      ...data,
+      username: val,
+      check_textInputChange: valid,
+      isValidUser: valid,
+    });
   };
 
   const handlePasswordChange = (val: string) => {
-    if (val.trim().length >= 8) {
-      setData({
-        ...data,
-        password: val,
-        isValidPassword: true,
-      });
-    } else {
-      setData({
-        ...data,
-        password: val,
-        isValidPassword: false,
-      });
-    }
+    const valid = Boolean(val.match(/^\S{8,}$/));
+    setData({
+      ...data,
+      password: val,
+      isValidPassword: valid,
+    });
   };
 
   const updateSecureTextEntry = () => {
@@ -82,17 +66,11 @@ const SignInScreen = (props: { navigation: any }) => {
   };
 
   const handleValidUser = (val: string) => {
-    if (val.match(/^\S{1,15}$/)) {
-      setData({
-        ...data,
-        isValidUser: true,
-      });
-    } else {
-      setData({
-        ...data,
-        isValidUser: false,
-      });
-    }
+    const valid = Boolean(val.match(/^\S{1,15}$/));
+    setData({
+      ...data,
+      isValidUser: valid,
+    });
   };
 
   const loginHandle = async (userName: string, password: string) => {
@@ -100,20 +78,44 @@ const SignInScreen = (props: { navigation: any }) => {
       name: userName,
       pwd: hash.sha256().update(password).digest("hex"),
     };
-    try {
-      const { data } = await api.post("/users/signin", values);
-      const { token } = data;
-      const decoded = jwtDecode(token) as jwtTokenType;
-      const expiresAt = decoded?.exp;
-      const userInfo = decoded;
-      setStorage(token, expiresAt, userInfo);
-    } catch (error) {
-      Alert.alert("Error", "Invalid username or password");
-    }
+    const schema = Type.Object({
+      name: Type.RegEx(/^\S{1,15}$/),
+      pwd: Type.RegEx(/^[a-f0-9]{64}$/i),
+    });
+    if (!ajv.validate(schema, values))
+      return Alert.alert(
+        "Error",
+        `Your username or password is invalid:
+- Username must be between 1 and 15 characters`
+      );
+
+    setLoading(true);
+    api
+      .post("/users/signin", values)
+      .then((res) => {
+        setLoading(false);
+        if (res.data.unverified)
+          return Alert.alert("Please verify your email first.");
+
+        const { token } = res.data;
+        const decoded = jwtDecode(token) as jwtTokenType;
+        const expiresAt = decoded?.exp;
+        const userInfo = decoded;
+        setStorage(token, expiresAt, userInfo);
+      })
+      .catch((error) => {
+        setLoading(false);
+        Alert.alert(
+          "Error",
+          error.response?.data?.error ||
+            error.response?.data ||
+            "Something went wrong. Please try again later."
+        );
+      });
   };
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: colors.dark }]}>
       <StatusBar backgroundColor={colors.dark} barStyle="light-content" />
       <View style={[styles.header, { backgroundColor: colors.dark }]}>
         <MetahkgLogo height={50} width={40} sx={styles.tinylogo} light />
@@ -153,13 +155,13 @@ const SignInScreen = (props: { navigation: any }) => {
             onChangeText={(val) => textInputChange(val)}
             onEndEditing={(e) => handleValidUser(e.nativeEvent.text)}
           />
-          {data.check_textInputChange ? (
+          {data.check_textInputChange && (
             <Animatable.View animation="bounceIn">
               <Feather name="check-circle" color="green" size={20} />
             </Animatable.View>
-          ) : null}
+          )}
         </View>
-        {data.isValidUser ? null : (
+        {!data.isValidUser && (
           <Animatable.View animation="fadeInLeft" duration={500}>
             <Text style={styles.errorMsg}>
               Username must be 1 - 15 characters long, and without any spaces.
@@ -194,14 +196,14 @@ const SignInScreen = (props: { navigation: any }) => {
             onChangeText={(val) => handlePasswordChange(val)}
           />
           <TouchableOpacity onPress={updateSecureTextEntry}>
-            {data.secureTextEntry ? (
-              <Feather name="eye-off" color="grey" size={20} />
-            ) : (
-              <Feather name="eye" color="grey" size={20} />
-            )}
+            <Feather
+              name={data.secureTextEntry ? "eye-off" : "eye"}
+              color="grey"
+              size={20}
+            />
           </TouchableOpacity>
         </View>
-        {data.isValidPassword ? null : (
+        {!data.isValidPassword && (
           <Animatable.View animation="fadeInLeft" duration={500}>
             <Text style={styles.errorMsg}>
               Password must be 8 characters long.
@@ -209,34 +211,33 @@ const SignInScreen = (props: { navigation: any }) => {
           </Animatable.View>
         )}
 
-        {/*<TouchableOpacity>
-          <Text style={{ color: "#f5bd15", marginTop: 15 }}>
-            Forgot password?
-          </Text>
-        </TouchableOpacity>*/}
         <View style={styles.button}>
-          <TouchableOpacity
-            style={styles.signIn}
-            onPress={() => {
-              loginHandle(data.username, data.password);
-            }}
-          >
-            <LinearGradient
-              colors={["#ffc100", "#f5bd1f"]}
+          {loading ? (
+            <ActivityIndicator color={colors.yellow} size="large" />
+          ) : (
+            <TouchableOpacity
               style={styles.signIn}
+              onPress={() => {
+                loginHandle(data.username, data.password);
+              }}
             >
-              <Text
-                style={[
-                  styles.textSign,
-                  {
-                    color: "#fff",
-                  },
-                ]}
+              <LinearGradient
+                colors={["#ffc100", "#f5bd1f"]}
+                style={styles.signIn}
               >
-                Sign In
-              </Text>
-            </LinearGradient>
-          </TouchableOpacity>
+                <Text
+                  style={[
+                    styles.textSign,
+                    {
+                      color: "#fff",
+                    },
+                  ]}
+                >
+                  Sign In
+                </Text>
+              </LinearGradient>
+            </TouchableOpacity>
+          )}
 
           <TouchableOpacity
             onPress={() => navigation.navigate("SignUpScreen")}

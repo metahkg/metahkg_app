@@ -1,16 +1,14 @@
 import React from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { FlatList, StyleSheet, View } from "react-native";
+import { FlatList, StyleSheet } from "react-native";
 
 import axios from "../utils/fetcher";
 import { AuthContext } from "../context/authContext";
-
-import Post from "../components/Post";
 import CommentListItem from "../components/CommentListItem";
 import CreateComment from "../components/CreateComment";
 import CommentLoader from "../components/CommentLoader";
 import PostLoader from "../components/PostLoader";
-import { commentType, postType } from "../types/post";
+import { postType } from "../types/post";
 
 const PostDetail = (props: { route: any; navigation: any }) => {
   const { route, navigation } = props;
@@ -80,28 +78,6 @@ const PostDetail = (props: { route: any; navigation: any }) => {
             refreshing={isLoading}
             onRefresh={() => getPostData()}
             keyExtractor={(item) => item.id}
-            ListHeaderComponent={
-              <Post
-                postId={post.id}
-                userId={authState.userInfo.id}
-                score={post.score}
-                type={post.type}
-                title={post.title}
-                author={post.author}
-                category={post.category}
-                text={post.text}
-                comments={post.comments}
-                created={post.created}
-                url={post.url}
-                votes={post.votes}
-                views={post.views}
-                setIsLoading={setIsLoading}
-                setData={setPost}
-                postType="item"
-                deleteButton={true}
-                deletePost={() => deletePost(post.id)}
-              />
-            }
             ListHeaderComponentStyle={styles.headerComponentStyle}
             renderItem={({ item, index }) => (
               <CommentListItem
@@ -111,7 +87,7 @@ const PostDetail = (props: { route: any; navigation: any }) => {
                 author={item.author}
                 created={item.created}
                 deleteComment={() => deleteComment(item.id)}
-                userId={authState.userInfo.id}
+                userId={authState.userInfo?.id}
                 postId={postId}
               />
             )}

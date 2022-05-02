@@ -77,12 +77,14 @@ const SignInScreen = (props: { navigation: any }) => {
               {
                 text: "OK",
                 onPress: () => {
+                  setLoading(true);
                   api
                     .post("/users/signin", {
                       name: username,
                       pwd: hash.sha256().update(password).digest("hex"),
                     })
                     .then((res) => {
+                      setLoading(false);
                       const { token } = res.data;
                       const decoded = jwtDecode(token) as jwtTokenType;
                       if (decoded) setStorage(token, decoded?.exp, decoded);
@@ -93,6 +95,7 @@ const SignInScreen = (props: { navigation: any }) => {
                         );
                     })
                     .catch(() => {
+                      setLoading(false);
                       Alert.alert(
                         "Error",
                         "Couldn't sign you in. Please make sure you are verified and sign in using the sign in page."
