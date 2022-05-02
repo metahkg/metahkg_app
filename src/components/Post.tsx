@@ -1,20 +1,17 @@
-import React, { SetStateAction } from "react";
+import React from "react";
 import {
-  Linking,
   StyleSheet,
   Text,
   TouchableOpacity,
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useNavigation, useRoute, useTheme } from "@react-navigation/native";
+import { useNavigation, useTheme } from "@react-navigation/native";
 import moment from "moment";
 
-import axios from "../utils/fetcher";
 import { AuthContext } from "../context/authContext";
 
 import { ArrowDown, ArrowUp, MessageSquare, Trash } from "./icons/index";
-import { authorType, commentType, postType } from "../types/post";
 import { customTheme } from "../constants/default-theme";
 import { userType } from "../types/user";
 import { useCategories } from "../context/contentChangeContext";
@@ -26,9 +23,7 @@ const Post = (props: {
   author: userType;
   category: number;
   comments: number;
-  created: number;
-  setIsLoading: React.Dispatch<SetStateAction<boolean>>;
-  setData: React.Dispatch<SetStateAction<postType | null>>;
+  created: string;
   postType?: string;
   deleteButton?: any;
   deletePost?: any;
@@ -41,8 +36,6 @@ const Post = (props: {
     category,
     comments,
     created,
-    setIsLoading,
-    setData,
     deleteButton,
     deletePost,
   } = props;
@@ -115,7 +108,7 @@ const Post = (props: {
       <Text
         style={[styles.title, { color: colors.text }]}
         onPress={() =>
-          navigation.navigate("PostDetail", { postId, category, comments })
+          navigation.navigate("PostDetail", { postId, category, comments, title })
         }
       >
         {title}
@@ -137,7 +130,7 @@ const Post = (props: {
           style={styles.centerAlign}
           activeOpacity={0.7}
           onPress={() =>
-            navigation.navigate("PostDetail", { postId, category, comments })
+            navigation.navigate("PostDetail", { postId, category, comments, title })
           }
         >
           <MessageSquare

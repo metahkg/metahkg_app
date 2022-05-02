@@ -3,7 +3,7 @@ import { FlatList, StatusBar, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useTheme } from "@react-navigation/native";
 
-import axios, { api } from "../utils/fetcher";
+import { api } from "../utils/fetcher";
 import { AuthContext } from "../context/authContext";
 import { ThemeContext } from "../context/themeSwichContext";
 
@@ -11,15 +11,15 @@ import CategoryPicker from "../components/CategoryPicker";
 import Post from "../components/Post";
 import PostLoader from "../components/PostLoader";
 import CategoryLoader from "../components/CategoryLoader";
-import customDefaultTheme, { customTheme } from "../constants/default-theme";
-import { postType } from "../types/post";
+import { customTheme } from "../constants/default-theme";
+import { summaryType } from "../types/post";
 
 const Home = () => {
   const { authState } = React.useContext(AuthContext);
   const { theme } = React.useContext(ThemeContext);
   const { colors } = useTheme() as customTheme;
 
-  const [postData, setPostData] = React.useState<postType | null>(null);
+  const [postData, setPostData] = React.useState<summaryType[] | null>(null);
   const [category, setCategory] = React.useState(1);
   const [isLoading, setIsLoading] = React.useState(false);
 
@@ -47,7 +47,7 @@ const Home = () => {
           extraData={isLoading}
           refreshing={isLoading}
           onRefresh={() => getPostData()}
-          keyExtractor={(item) => item.id}
+          keyExtractor={(item) => String(item.id)}
           ListHeaderComponent={
             <CategoryPicker selectedCategory={category} onClick={setCategory} />
           }
@@ -67,12 +67,8 @@ const Home = () => {
               title={item.title}
               author={item.op}
               category={item.category}
-              //text={item.conversation?.[0]}
               comments={item.c}
               created={item.lastModified}
-              //votes={}
-              setIsLoading={setIsLoading}
-              setData={setPostData}
               deleteButton={false}
             />
           )}

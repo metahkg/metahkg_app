@@ -17,7 +17,7 @@ import { customTheme } from "../constants/default-theme";
 const Setting = () => {
   const { colors } = useTheme() as customTheme;
   const { theme, changeTheme } = React.useContext(ThemeContext);
-  let menuList = [
+  const menuList = [
     {
       title: "服務條款",
       // icon: 'language',

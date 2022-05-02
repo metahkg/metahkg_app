@@ -1,96 +1,93 @@
-import React from "react";
+import React, {
+  useEffect,
+  useState,
+  useContext,
+  useRef,
+  useCallback,
+} from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { FlatList, StyleSheet } from "react-native";
 
-import axios from "../utils/fetcher";
+import { api } from "../utils/fetcher";
 import { AuthContext } from "../context/authContext";
 import CommentListItem from "../components/CommentListItem";
 import CreateComment from "../components/CreateComment";
 import CommentLoader from "../components/CommentLoader";
 import PostLoader from "../components/PostLoader";
-import { postType } from "../types/post";
+import { commentType, threadType, voteType } from "../types/post";
 
 const PostDetail = (props: { route: any; navigation: any }) => {
-  const { route, navigation } = props;
-  const { authState } = React.useContext(AuthContext);
-  const flatListRef = React.useRef<FlatList>(null);
+  const { route } = props;
+  const { authState } = useContext(AuthContext);
+  const flatListRef = useRef<FlatList>(null);
 
-  const [post, setPost] = React.useState<null | postType>(null);
-  const [isLoading, setIsLoading] = React.useState(false);
-  const [comment, setComment] = React.useState("");
-  const [isFocused, setIsFocused] = React.useState(false);
-
+  const [thread, setThread] = useState<null | threadType>(null);
+  const [userVotes, setUserVotes] = useState<null | { [id: number]: voteType }>(
+    null
+  );
+  const [isLoading, setIsLoading] = useState(false);
+  const [comment, setComment] = useState("");
+  const [isFocused, setIsFocused] = useState(false);
   const { postId } = route.params;
-  const { comments } = route.params;
 
-  const getPostData = React.useCallback(async () => {
+  const getPostData = useCallback(async () => {
     setIsLoading(true);
-    const { data } = await axios.get(`post/${postId}`);
-    setPost(data);
-    // console.log("the postsssss are ", data)
+    const { data } = await api.get(`/posts/thread/${postId}`);
+    setThread(data);
     setIsLoading(false);
   }, [postId]);
 
-  React.useEffect(() => {
-    getPostData();
-  }, [getPostData]);
+  useEffect(() => {
+    setIsLoading(true);
+    let done = false;
+    api.get(`/posts/thread/${postId}`).then((res) => {
+      setThread(res.data);
+      done && setIsLoading(false);
+      done = true;
+    });
+    api.get(`/posts/uservotes/${postId}`).then((res) => {
+      setUserVotes(res.data);
+      done && setIsLoading(false);
+      done = true;
+    });
+  }, [getPostData, postId]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     isFocused &&
       flatListRef.current &&
       flatListRef.current.scrollToOffset({ animated: true, offset: 0 });
   }, [isFocused]);
 
   const createComment = async () => {
-    const { data } = await axios.post(`/post/${postId}`, {
+    const { data } = await api.post(`/post/${postId}`, {
       comment,
     });
-    setPost(data);
+    setThread(data);
     setComment("");
-  };
-
-  const deleteComment = async (commentId: number) => {
-    setIsLoading(true);
-    const { data } = await axios.delete(`/post/${postId}/${commentId}`);
-    setPost(data);
-    setIsLoading(false);
-  };
-
-  const deletePost = async (postId: number) => {
-    setIsLoading(true);
-    const { status } = await axios.delete(`post/${postId}`);
-    if (status === 200) {
-      navigation.push("Home");
-    }
-    setIsLoading(false);
   };
 
   return (
     <SafeAreaView style={styles.container}>
-      {post ? (
-        <>
+      {thread && userVotes ? (
+        <React.Fragment>
           <FlatList
             ref={flatListRef}
-            data={post.comments.sort(
-              (a: { created: number }, b: { created: number }) =>
-                a.created - b.created
-            )}
+            data={thread.conversation}
             refreshing={isLoading}
             onRefresh={() => getPostData()}
-            keyExtractor={(item) => item.id}
+            keyExtractor={(item) => String(item.id)}
             ListHeaderComponentStyle={styles.headerComponentStyle}
-            renderItem={({ item, index }) => (
-              <CommentListItem
-                index={index}
-                wholeitem={item}
-                body={item.body}
-                author={item.author}
-                created={item.created}
-                deleteComment={() => deleteComment(item.id)}
-                userId={authState.userInfo?.id}
-                postId={postId}
-              />
-            )}
+            renderItem={(props: { item: commentType; index: number }) => {
+              const { item, index } = props;
+              return (
+                <CommentListItem
+                  index={index}
+                  comment={item}
+                  postId={postId}
+                  userVotes={userVotes}
+                />
+              );
+            }}
           />
           {authState.token && (
             <CreateComment
@@ -100,14 +97,14 @@ const PostDetail = (props: { route: any; navigation: any }) => {
               comment={comment}
             />
           )}
-        </>
+        </React.Fragment>
       ) : (
-        <>
+        <React.Fragment>
           <PostLoader />
-          {comments.map((i: { id: React.Key | null | undefined }) => (
-            <CommentLoader key={i.id} />
+          {[...Array(10)].map((i, index) => (
+            <CommentLoader key={index} />
           ))}
-        </>
+        </React.Fragment>
       )}
     </SafeAreaView>
   );

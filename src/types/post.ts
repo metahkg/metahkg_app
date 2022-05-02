@@ -8,24 +8,25 @@ export type summaryType = {
   slink: string;
   title: string;
   category: number;
-  lastModified: Date;
-  createdAt: Date;
+  lastModified: string;
+  createdAt: string;
 };
 export type authorType = {
   username: string;
   id: number;
 };
-export type voteType = {
-  user: number;
-  vote: 1 | -1;
-};
+export type voteType = "U" | "D"
 export type commentType = {
   id: number;
-  score: number;
-  votes: voteType[];
-  user: number;
-  created: number;
+  U: number;
+  D: number;
+  user: userType;
+  createdAt: string;
+  slink: string;
+  comment: string;
+  replies?: number[];
 };
+export type threadType = summaryType & { conversation: commentType[] };
 export type postType = {
   comments: commentType[];
   id: number;

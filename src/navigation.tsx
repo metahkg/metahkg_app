@@ -79,7 +79,7 @@ function HomeScreens(props: { navigation: any }) {
           const { route } = props;
           return {
             headerShown: true,
-            headerTitle: route.params.category,
+            headerTitle: route.params.title,
             headerStyle: { height: 40 },
             headerTitleStyle: {
               fontSize: 16,
@@ -107,16 +107,13 @@ function HomeScreens(props: { navigation: any }) {
       <HomeStack.Screen
         name="CommentReply"
         component={CommentReply}
-        options={(props: { route: any }) => {
-          const { route } = props;
-          return {
-            headerTitle: route.params.category,
-            headerStyle: { height: 40 },
-            headerTitleStyle: {
-              fontSize: 16,
-            },
-            headerTitleAlign: "center",
-          };
+        options={{
+          headerTitle: "Reply",
+          headerStyle: { height: 40 },
+          headerTitleStyle: {
+            fontSize: 16,
+          },
+          headerTitleAlign: "center",
         }}
       />
     </HomeStack.Navigator>
