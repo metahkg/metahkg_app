@@ -13,7 +13,6 @@ import { AuthContext } from "../context/authContext";
 import CommentListItem from "../components/CommentListItem";
 import CreateComment from "../components/CreateComment";
 import CommentLoader from "../components/CommentLoader";
-import PostLoader from "../components/PostLoader";
 import { commentType, threadType, voteType } from "../types/post";
 
 const PostDetail = (props: { route: any; navigation: any }) => {
@@ -77,13 +76,12 @@ const PostDetail = (props: { route: any; navigation: any }) => {
             onRefresh={() => getPostData()}
             keyExtractor={(item) => String(item.id)}
             ListHeaderComponentStyle={styles.headerComponentStyle}
-            renderItem={(props: { item: commentType; index: number }) => {
-              const { item, index } = props;
+            renderItem={(props: { item: commentType }) => {
+              const { item: comment } = props;
               return (
                 <CommentListItem
-                  index={index}
-                  comment={item}
-                  postId={postId}
+                  thread={thread}
+                  comment={comment}
                   userVotes={userVotes}
                 />
               );
@@ -100,7 +98,6 @@ const PostDetail = (props: { route: any; navigation: any }) => {
         </React.Fragment>
       ) : (
         <React.Fragment>
-          <PostLoader />
           {[...Array(10)].map((i, index) => (
             <CommentLoader key={index} />
           ))}

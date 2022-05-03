@@ -62,10 +62,10 @@ const Post = (props: {
               navigation.navigate("User", { username: author.name })
             }
           >
-            {author?.name} ·{" "}
+            {author?.name} 
           </Text>
           <Text style={[styles.dateText, { color: colors.text }]}>
-            {moment(created).fromNow()}
+            {" "}·{" "}{moment(created).fromNow()}
             {"  "}
           </Text>
         </View>

@@ -27,19 +27,14 @@ import {
 } from "react-native";
 import {
   actions,
-  getContentCSS,
   RichEditor,
   RichToolbar,
 } from "react-native-pell-rich-editor";
 import { XMath } from "@wxik/core";
-// import {InsertLinkModal} from './insertLink';
 import { EmojiView } from "./emoji";
-import { ThemeContext } from "../../context/themeSwichContext";
-import { ContentContext } from "../../context/contentChangeContext";
 
 const imageList = [
   "https://img.lesmao.vip/k/h256/R/MeiTu/1293.jpg",
-  "https://pbs.twimg.com/profile_images/1242293847918391296/6uUsvfJZ.png",
   "https://img.lesmao.vip/k/h256/R/MeiTu/1297.jpg",
   "https://img.lesmao.vip/k/h256/R/MeiTu/1292.jpg",
 ];
@@ -77,10 +72,12 @@ function createContentStyle(theme: "light" | "dark") {
   return contentStyle;
 }
 
-export function Example(props: { theme?: any; navigation: any }) {
-  const { content, changecontent } = React.useContext(ContentContext);
-
-  let { theme: initTheme = Appearance.getColorScheme(), navigation } = props;
+export function Example(props: {
+  theme?: any;
+  navigation: any;
+  onChange: (comment: string) => void;
+}) {
+  let { theme: initTheme = Appearance.getColorScheme(), navigation, onChange } = props;
   let richText = useRef<any>(null);
   let linkModal = useRef<any>(null);
   let scrollRef = useRef<any>();
@@ -111,8 +108,7 @@ export function Example(props: { theme?: any; navigation: any }) {
     console.log("CHANGE DETECTED");
     console.log("content set", html.length, typeof html);
     contentRef.current = html;
-    changecontent(contentRef.current);
-    console.log("content set", content.length);
+    onChange(contentRef.current);
   }, []);
 
   // theme change to editor color

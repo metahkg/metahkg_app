@@ -1,26 +1,26 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { Alert, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { useNavigation, useTheme } from "@react-navigation/native";
-
 import moment from "moment";
 
 import { ArrowDown, ArrowUp, MessageSquare } from "./icons";
 import { SafeAreaView } from "react-native-safe-area-context";
-import axios, { api } from "../utils/fetcher";
+import { api } from "../utils/fetcher";
 import { WebView } from "react-native-webview";
 import { customTheme } from "../constants/default-theme";
-import { commentType, postType, voteType } from "../types/post";
+import { commentType, threadType, voteType } from "../types/post";
+import { ThemeContext } from "../context/themeSwichContext";
 
 const CommentListItem = (props: {
-  index: number;
   userVotes: { [id: number]: voteType };
   comment: commentType;
-  postId: number;
+  thread: threadType;
 }) => {
-  const { index, comment, userVotes, postId } = props;
+  const { comment, userVotes, thread } = props;
+  const { theme } = useContext(ThemeContext);
   const { colors } = useTheme() as customTheme;
-  const [score, setscore] = useState(comment.U || 0 - comment.D || 0);
-
+  const [upVotes, setUpVotes] = useState(comment.U || 0);
+  const [downVotes, setDownVotes] = useState(comment.D || 0);
   const [isUpVoted, setisUpVoted] = useState(userVotes?.[comment.id] === "U");
   const [isDownVoted, setisDownVoted] = useState(
     userVotes?.[comment.id] === "D"
@@ -38,27 +38,70 @@ const CommentListItem = (props: {
         .x-todo li {list-style:none;}
         .x-todo-box {position: relative; left: -24px;}
         .x-todo-box input{position: absolute;}
-        blockquote{border-left: 6px solid #ddd;padding: 5px 0 5px 10px;margin: 15px 0 15px 15px;}
         hr{display: block;height: 0; border: 0;border-top: 1px solid #ccc; margin: 15px 0; padding: 0;}
         pre{padding: 10px 5px 10px 10px;margin: 15px 0;display: block;line-height: 18px;background: #F0F0F0;border-
 radius: 6px;font-size: 13px; font-family: 'monaco', 'Consolas', "Liberation Mono", Courier, monospace; word-break:
 break-all; word-wrap: break-word;overflow-x: auto;}
         pre code {display: block;font-size: inherit;white-space: pre-wrap;color: inherit;}
+      .comment-body * {
+          object-fit: contain !important;
+          max-width: 100% !important;
+      }
+      .comment-body a {
+          color: #3498db;
+      }
+      .comment-body img,
+      .comment-body i,
+      .comment-body video {
+          height: 100%;
+          max-height: 400px;
+      }
+      
+      .comment-body {
+          max-width: 100% !important;
+          overflow: hidden !important;
+      }
+      
+      .comment-body blockquote {
+          color: #aca9a9;
+          border-left: 2px solid #aca9a9;
+          margin-left: 0;
+          padding: 0;
+      }
+      
+      .comment-body blockquote > div:first-child {
+          margin-left: 15px;
+      }
+      
+      .comment-body > blockquote * {
+          color: #aca9a9;
+      }
+      
+      .comment-body blockquote > .comment-body > *:first-child {
+          margin-top: 5px;
+      }
+      .comment-body blockquote > .comment-body > *:last-child {
+          margin-bottom: 5px;
+      }      
     </style>
 `;
-  let html = `<html><head><meta name="viewport" content="user-scalable=1.0,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0">${css}</head><body>${comment.comment}</body></html>`;
+  const html = `<html><head><meta name="viewport" content="user-scalable=1.0,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0">${css}</head><body class="comment-body">${comment.comment}</body></html>`;
 
-  const sendVote = (vote: "U" | "D") => {
+  const vote = (vote: "U" | "D") => {
     api
       .post(`/posts/vote`, {
-        id: postId,
+        id: thread.id,
         cid: commentId,
         vote,
       })
       .then(() => {
-        const newscore = score + 1;
-        setscore(newscore);
-        setisUpVoted(true);
+        if (vote === "U") {
+          setisUpVoted(true);
+          setUpVotes(upVotes + 1);
+        } else {
+          setisDownVoted(true);
+          setDownVotes(downVotes + 1);
+        }
       })
       .catch((err) => {
         Alert.alert(
@@ -68,11 +111,11 @@ break-all; word-wrap: break-word;overflow-x: auto;}
       });
   };
   const upVote = () => {
-    sendVote("U");
+    vote("U");
   };
 
   const downVote = () => {
-    sendVote("D");
+    vote("D");
   };
 
   return (
@@ -84,12 +127,25 @@ break-all; word-wrap: break-word;overflow-x: auto;}
     >
       <View style={styles.headerContainer}>
         <View style={styles.headerLeft}>
-          <Text style={[styles.dateText, { color: colors.text }]}>
+          <Text
+            style={[
+              styles.dateText,
+              {
+                color:
+                  comment.user.id === thread.op.id
+                    ? colors.yellow
+                    : colors.text,
+              },
+            ]}
+          >
             {"#"}
             {comment.id}{" "}
           </Text>
           <Text
-            style={[styles.italicFont, { color: colors.blue }]}
+            style={[
+              styles.italicFont,
+              { color: comment.user.sex === "M" ? colors.blue : colors.red },
+            ]}
             onPress={() =>
               navigation.navigate("User", { username: comment.user?.name })
             }
@@ -114,7 +170,7 @@ break-all; word-wrap: break-word;overflow-x: auto;}
               color={isUpVoted ? colors.green : colors.icon}
             />
           </TouchableOpacity>
-          <Text style={[styles.score, { color: colors.text }]}>{score}</Text>
+          <Text style={[styles.score, { color: colors.text }]}>{upVotes}</Text>
 
           <View style={styles.centerAlign}>
             <TouchableOpacity
@@ -128,6 +184,9 @@ break-all; word-wrap: break-word;overflow-x: auto;}
                 color={isDownVoted ? colors.red : colors.icon}
               />
             </TouchableOpacity>
+            <Text style={[styles.score, { color: colors.text }]}>
+              {downVotes}
+            </Text>
           </View>
         </View>
       </View>
@@ -142,6 +201,9 @@ break-all; word-wrap: break-word;overflow-x: auto;}
           // domStorageEnabled={false}
           // bounces={false}
           // javaScriptEnabled={true}
+          style={{
+            backgroundColor: theme === "dark" ? colors.background : "#fff",
+          }}
           source={{ html }}
         />
       </View>
@@ -165,7 +227,7 @@ break-all; word-wrap: break-word;overflow-x: auto;}
         <TouchableOpacity
           onPress={() =>
             navigation.navigate("CommentReply", {
-              postId: postId,
+              postId: thread.id,
               commentId: commentId,
             })
           }
