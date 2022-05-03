@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Alert, Text, TouchableOpacity, View } from "react-native";
+import { Alert, TouchableOpacity } from "react-native";
 import { useTheme } from "@react-navigation/native";
 import { Send } from "./icons";
 import { Example } from "./TextEditorArea/TextEditor";

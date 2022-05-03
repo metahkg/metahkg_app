@@ -26,8 +26,8 @@ const PostDetail = (props: { route: any; navigation: any }) => {
     null
   );
   const [isLoading, setIsLoading] = useState(false);
-  const [comment, setComment] = useState("");
   const [isFocused, setIsFocused] = useState(false);
+  const [reload, setReload] = useState(false);
   const { postId } = route.params;
 
   const getPostData = useCallback(async () => {
@@ -46,7 +46,7 @@ const PostDetail = (props: { route: any; navigation: any }) => {
       });
   }, [postId]);
 
-  useEffect(() => {
+  const fetch = () => {
     setIsLoading(true);
     let done = false;
     api.get(`/posts/thread/${postId}`).then((res) => {
@@ -59,21 +59,17 @@ const PostDetail = (props: { route: any; navigation: any }) => {
       done && setIsLoading(false);
       done = true;
     });
-  }, [getPostData, postId]);
+  };
+
+  if (route.params.reload) fetch();
+  
+  useEffect(fetch, [getPostData, postId, reload]);
 
   useEffect(() => {
     isFocused &&
       flatListRef.current &&
       flatListRef.current.scrollToOffset({ animated: true, offset: 0 });
   }, [isFocused]);
-
-  const createComment = async () => {
-    const { data } = await api.post(`/post/${postId}`, {
-      comment,
-    });
-    setThread(data);
-    setComment("");
-  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -99,10 +95,9 @@ const PostDetail = (props: { route: any; navigation: any }) => {
           />
           {authState.token && (
             <CreateComment
-              onPress={createComment}
-              setComment={setComment}
+              postId={postId}
               setIsFocused={setIsFocused}
-              comment={comment}
+              setReload={setReload}
             />
           )}
         </React.Fragment>

@@ -1,21 +1,76 @@
-import React, { SetStateAction, useRef } from "react";
-import { StyleSheet, TextInput, TouchableOpacity, View } from "react-native";
+import React, {
+  SetStateAction,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
+import {
+  Alert,
+  StyleSheet,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import { Send } from "./icons";
 import { customTheme } from "../constants/default-theme";
 import { useTheme } from "@react-navigation/native";
+import Recaptcha, { RecaptchaHandles } from "react-native-recaptcha-that-works";
+import { ThemeContext } from "../context/themeSwichContext";
+import { api } from "../utils/fetcher";
 
 const CreateComment = (props: {
-  onPress: () => void;
-  setComment: React.Dispatch<SetStateAction<string>>;
-  comment: string;
+  postId: number;
   setIsFocused?: React.Dispatch<SetStateAction<boolean>>;
+  setReload: React.Dispatch<SetStateAction<boolean>>;
 }) => {
-  const { onPress, setComment, comment, setIsFocused } = props;
+  const { setIsFocused, postId, setReload } = props;
   const { colors } = useTheme() as customTheme;
+  const { theme } = useContext(ThemeContext);
   const textInputRef = useRef<TextInput>(null);
-
+  const [rtoken, setRtoken] = useState("");
+  const [comment, setComment] = useState("");
+  const [createComment, setCreateComment] = useState(false);
+  const recaptcha = useRef<RecaptchaHandles>(null);
+  useEffect(() => {
+    if (comment && createComment && rtoken) {
+      api
+        .post(`/posts/comment`, {
+          id: postId,
+          comment,
+          rtoken,
+        })
+        .then(() => {
+          setComment("");
+          setRtoken("");
+          setCreateComment(false);
+          setReload((reload) => !reload);
+        })
+        .catch((err) => {
+          Alert.alert(
+            "Error",
+            err.response?.data?.error || err.response?.data || err
+          );
+          setCreateComment(false);
+          setRtoken("");
+        });
+    }
+  }, [createComment, rtoken, comment]);
   return (
     <View style={[styles.container, { backgroundColor: colors.bgColor }]}>
+      <Recaptcha
+        ref={recaptcha}
+        siteKey={
+          process.env.REACT_APP_recaptchasitekey ||
+          "6LcX4bceAAAAAIoJGHRxojepKDqqVLdH9_JxHQJ-"
+        }
+        baseUrl="https://dev.metahkg.org"
+        onVerify={setRtoken}
+        onExpire={() => {
+          setRtoken("");
+        }}
+        theme={theme}
+      />
       <TextInput
         style={[
           styles.textInput,
@@ -26,7 +81,7 @@ const CreateComment = (props: {
           },
         ]}
         ref={textInputRef}
-        placeholder="内文"
+        placeholder="Comment"
         placeholderTextColor={colors.text}
         onFocus={() => {
           setIsFocused && setIsFocused(true);
@@ -34,18 +89,21 @@ const CreateComment = (props: {
         onBlur={() => {
           setIsFocused && setIsFocused(false);
         }}
-        onChangeText={setComment}
+        onChangeText={(comment) => {
+          setComment(comment);
+          if (!comment && createComment) setCreateComment(false);
+        }}
         maxLength={2000}
         autoCorrect={false}
         value={comment}
       />
       <TouchableOpacity
         onPress={() => {
-          // @ts-ignore
-          textInputRef.current.blur();
-
-          onPress();
+          textInputRef.current?.blur();
+          if (!rtoken) recaptcha.current?.open();
+          setCreateComment(true);
         }}
+        disabled={!comment}
       >
         <Send color={colors.text} />
       </TouchableOpacity>
