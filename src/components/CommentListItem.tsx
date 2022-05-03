@@ -205,7 +205,7 @@ break-all; word-wrap: break-word;overflow-x: auto;}
         // bounces={false}
         // javaScriptEnabled={true}
         style={{
-          backgroundColor: theme === "dark" ? colors.background : "#fff",
+          backgroundColor:colors.bgColor,
         }}
         source={{ html }}
       />
