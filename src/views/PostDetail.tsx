@@ -14,6 +14,7 @@ import CommentListItem from "../components/CommentListItem";
 import CreateComment from "../components/CreateComment";
 import CommentLoader from "../components/CommentLoader";
 import { commentType, threadType, voteType } from "../types/post";
+import { Alert } from "react-native";
 
 const PostDetail = (props: { route: any; navigation: any }) => {
   const { route } = props;
@@ -31,9 +32,18 @@ const PostDetail = (props: { route: any; navigation: any }) => {
 
   const getPostData = useCallback(async () => {
     setIsLoading(true);
-    const { data } = await api.get(`/posts/thread/${postId}`);
-    setThread(data);
-    setIsLoading(false);
+    api
+      .get(`/posts/thread/${postId}`)
+      .then((res) => {
+        setThread(res.data);
+        setIsLoading(false);
+      })
+      .catch((err) => {
+        Alert.alert(
+          "Error",
+          err.response.data?.error || err.response.data || err
+        );
+      });
   }, [postId]);
 
   useEffect(() => {

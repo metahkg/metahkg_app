@@ -17,8 +17,8 @@ const CommentListItem = (props: {
   thread: threadType;
 }) => {
   const { comment, userVotes, thread } = props;
-  const { theme } = useContext(ThemeContext);
   const { colors } = useTheme() as customTheme;
+  const { theme } = useContext(ThemeContext);
   const [upVotes, setUpVotes] = useState(comment.U || 0);
   const [downVotes, setDownVotes] = useState(comment.D || 0);
   const [isUpVoted, setisUpVoted] = useState(userVotes?.[comment.id] === "U");
@@ -30,27 +30,71 @@ const CommentListItem = (props: {
   let commentId = comment.id;
 
   const css = `<style>
-        video {max-width: 98%;margin-left:auto;margin-right:auto;display: block;}
-        img {max-width: 98%;vertical-align: middle;}
-        table {width: 100% !important;}
-        table td {width: inherit;}
-        table span { font-size: 12px !important; }
-        .x-todo li {list-style:none;}
-        .x-todo-box {position: relative; left: -24px;}
-        .x-todo-box input{position: absolute;}
-        hr{display: block;height: 0; border: 0;border-top: 1px solid #ccc; margin: 15px 0; padding: 0;}
-        pre{padding: 10px 5px 10px 10px;margin: 15px 0;display: block;line-height: 18px;background: #F0F0F0;border-
-radius: 6px;font-size: 13px; font-family: 'monaco', 'Consolas', "Liberation Mono", Courier, monospace; word-break:
-break-all; word-wrap: break-word;overflow-x: auto;}
-        pre code {display: block;font-size: inherit;white-space: pre-wrap;color: inherit;}
+      video {
+        max-width: 98%;
+        margin-left: auto;
+        margin-right:auto; 
+        display: block;
+      }
+      img {
+        max-width: 98%;
+        vertical-align: middle;
+      }
+      table {
+        width: 100% !important;
+      }
+      table td {
+        width: inherit;
+      }
+      table span {
+        font-size: 12px !important;
+      }
+      .x-todo li {
+        list-style:none;
+      }
+      .x-todo-box {
+        position: relative;
+        left: -24px;
+      }
+      .x-todo-box input {
+        position: absolute;
+      }
+      hr {
+        display: block;
+        height: 0;
+        border: 0;
+        border-top: 1px solid #ccc;
+        margin: 15px 0;
+        padding: 0;
+      }
+      pre {
+        padding: 10px 5px 10px 10px;
+        margin: 15px 0;
+        display: block;
+        line-height: 18px;
+        background: #F0F0F0;
+        border-radius: 6px;
+        font-size: 13px;
+        font-family: 'monaco', 'Consolas', "Liberation Mono", Courier, monospace;
+        word-break: break-all;
+        word-wrap: break-word;
+        overflow-x: auto;
+      }
+      pre code {
+        display: block;
+        font-size: inherit;
+        white-space: pre-wrap;
+        color: inherit;
+      }
       .comment-body {
         color: ${colors.text};
       }
       .comment-body * {
           object-fit: contain !important;
-          max-width: 100% !important;
+          max-width: 100%;
       }
       .comment-body a {
+          display: flex;
           color: #3498db;
       }
       .comment-body img,
@@ -59,27 +103,23 @@ break-all; word-wrap: break-word;overflow-x: auto;}
           height: 100%;
           max-height: 400px;
       }
-      
       .comment-body {
           max-width: 100% !important;
           overflow: hidden !important;
+          word-break: break-word;
       }
-      
       .comment-body blockquote {
           color: #aca9a9;
           border-left: 2px solid #aca9a9;
           margin-left: 0;
           padding: 0;
       }
-      
       .comment-body blockquote > div:first-child {
           margin-left: 15px;
       }
-      
       .comment-body > blockquote * {
           color: #aca9a9;
       }
-      
       .comment-body blockquote > .comment-body > *:first-child {
           margin-top: 5px;
       }
@@ -88,7 +128,35 @@ break-all; word-wrap: break-word;overflow-x: auto;}
       }      
     </style>
 `;
-  const html = `<html><head><meta name="viewport" content="user-scalable=1.0,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0">${css}</head><body class="comment-body">${comment.comment}</body></html>`;
+  const html = `<html>
+  <head>
+    <meta name="viewport" content="user-scalable=1.0,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0">
+    ${css}
+    <link 
+      rel="stylesheet" 
+      href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.28.0/themes/prism${
+        theme === "dark" ? "-tomorrow" : ""
+      }.min.css"
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
+  </head>
+  <body class="comment-body">
+    ${comment.comment}
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.28.0/components/prism-core.min.js"
+      integrity="sha512-9khQRAUBYEJDCDVP2yw3LRUQvjJ0Pjx0EShmaQjcHa6AXiOv6qHQu9lCAIR8O+/D8FtaCoJ2c0Tf9Xo7hYH01Q=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    ></script>
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.28.0/plugins/autoloader/prism-autoloader.min.js"
+      integrity="sha512-fTl/qcO1VgvKtOMApX2PdZzkziyr2stM65GYPLGuYMnuMm1z2JLJG6XVU7C/mR+E7xBUqCivykuhlzfqxXBXbg=="
+      crossorigin="anonymous" 
+      referrerpolicy="no-referrer"
+    ></script>
+  </body>
+</html>`;
 
   const vote = (vote: "U" | "D") => {
     api
@@ -205,7 +273,7 @@ break-all; word-wrap: break-word;overflow-x: auto;}
         // bounces={false}
         // javaScriptEnabled={true}
         style={{
-          backgroundColor:colors.bgColor,
+          backgroundColor: colors.bgColor,
         }}
         source={{ html }}
       />

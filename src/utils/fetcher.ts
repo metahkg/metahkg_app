@@ -54,14 +54,17 @@ api.interceptors.request.use(
 );
 
 api.interceptors.response.use(
-  (response) => {
+  async (response) => {
+    if (response.headers.token)
+      await AsyncStorage.setItem("token", response.headers.token);
+    
     return response;
   },
   (error) => {
     const code = error && error.response ? error.response.status : 0;
-    if (code === 401 || code === 403) {
+    if (code === 401 || code === 403)
       console.log("error code", code);
-    }
+    
     return Promise.reject(error);
   }
 );
