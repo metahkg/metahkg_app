@@ -6,7 +6,7 @@ import moment from "moment";
 import { ArrowDown, ArrowUp, MessageSquare } from "./icons";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { api } from "../utils/fetcher";
-import { WebView } from "react-native-webview";
+import AutoHeightWebView from "react-native-autoheight-webview";
 import { customTheme } from "../constants/default-theme";
 import { commentType, threadType, voteType } from "../types/post";
 import { ThemeContext } from "../context/themeSwichContext";
@@ -43,6 +43,9 @@ const CommentListItem = (props: {
 radius: 6px;font-size: 13px; font-family: 'monaco', 'Consolas', "Liberation Mono", Courier, monospace; word-break:
 break-all; word-wrap: break-word;overflow-x: auto;}
         pre code {display: block;font-size: inherit;white-space: pre-wrap;color: inherit;}
+      .comment-body {
+        color: ${colors.text};
+      }
       .comment-body * {
           object-fit: contain !important;
           max-width: 100% !important;
@@ -190,23 +193,23 @@ break-all; word-wrap: break-word;overflow-x: auto;}
           </View>
         </View>
       </View>
-      <View style={{ height: 200 }}>
-        <WebView
-          // useWebKit={true}
-          scrollEnabled={true}
-          // hideKeyboardAccessoryView={true}
-          // keyboardDisplayRequiresUserAction={false}
-          // originWhitelist={['*']}
-          // dataDetectorTypes={'none'}
-          // domStorageEnabled={false}
-          // bounces={false}
-          // javaScriptEnabled={true}
-          style={{
-            backgroundColor: theme === "dark" ? colors.background : "#fff",
-          }}
-          source={{ html }}
-        />
-      </View>
+
+      <AutoHeightWebView
+        // useWebKit={true}
+        scrollEnabled={true}
+        // hideKeyboardAccessoryView={true}
+        // keyboardDisplayRequiresUserAction={false}
+        // originWhitelist={['*']}
+        // dataDetectorTypes={'none'}
+        // domStorageEnabled={false}
+        // bounces={false}
+        // javaScriptEnabled={true}
+        style={{
+          backgroundColor: theme === "dark" ? colors.background : "#fff",
+        }}
+        source={{ html }}
+      />
+
       <View style={styles.bottomContainer}>
         <TouchableOpacity
           style={styles.centerAlign}

@@ -4923,6 +4923,13 @@ react-native-animatable@1.3.3:
   dependencies:
     prop-types "^15.7.2"
 
+react-native-autoheight-webview@^1.6.1:
+  version "1.6.1"
+  resolved "https://registry.yarnpkg.com/react-native-autoheight-webview/-/react-native-autoheight-webview-1.6.1.tgz#dc404f36577478e91fc83999203999e9c9ea5bd5"
+  integrity sha512-yno5Fo3RBaH/p8ywgGE23xKLaX0aiVFhFLYGlhQh9qKoCUuXnIuH55di3ELutR7MCXHWg/V3a8iBb11HLcPUSA==
+  dependencies:
+    prop-types "^15.7.2"
+
 react-native-codegen@^0.0.6:
   version "0.0.6"
   resolved "https://registry.yarnpkg.com/react-native-codegen/-/react-native-codegen-0.0.6.tgz#b3173faa879cf71bfade8d030f9c4698388f6909"
