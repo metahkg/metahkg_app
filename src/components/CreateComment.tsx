@@ -37,7 +37,7 @@ const CreateComment = (props: {
       api
         .post(`/posts/comment`, {
           id: postId,
-          comment,
+          comment: `<p>${comment}</p>`,
           rtoken,
         })
         .then(() => {

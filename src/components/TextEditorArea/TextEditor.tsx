@@ -32,6 +32,8 @@ import {
 } from "react-native-pell-rich-editor";
 import { XMath } from "@wxik/core";
 import { EmojiView } from "./emoji";
+import { useContext } from "react";
+import { ThemeContext } from "../../context/themeSwichContext";
 
 const imageList = [
   "https://img.lesmao.vip/k/h256/R/MeiTu/1293.jpg",
@@ -72,38 +74,30 @@ function createContentStyle(theme: "light" | "dark") {
   return contentStyle;
 }
 
-export function Example(props: {
-  theme?: any;
+export function TextEditor(props: {
   navigation: any;
   onChange: (comment: string) => void;
 }) {
-  let { theme: initTheme = Appearance.getColorScheme(), navigation, onChange } = props;
-  let richText = useRef<any>(null);
-  let linkModal = useRef<any>(null);
-  let scrollRef = useRef<any>();
+  const { theme, changeTheme } = useContext(ThemeContext);
+  const { navigation, onChange } = props;
+  const richText = useRef<any>(null);
+  const linkModal = useRef<any>(null);
+  const scrollRef = useRef<any>();
   // save on html
-  let contentRef = useRef(initHTML);
+  const contentRef = useRef(initHTML);
 
-  let [theme, setTheme] = useState(initTheme);
-  let [emojiVisible, setEmojiVisible] = useState(false);
-  let [disabled, setDisable] = useState(false);
-  let contentStyle = useMemo(() => createContentStyle(theme), [theme]);
+  const [emojiVisible, setEmojiVisible] = useState(false);
+  const contentStyle = useMemo(() => createContentStyle(theme), [theme]);
 
   // on save to preview
-  let handleSave = useCallback(() => {
+  const handleSave = useCallback(() => {
     navigation.push("preview", {
       html: contentRef.current,
-      // @ts-ignore
-      css: getContentCSS(),
     });
   }, []);
 
-  let handleHome = useCallback(() => {
-    navigation.push("index");
-  }, []);
-
   // editor change data
-  let handleChange = useCallback((html) => {
+  const handleChange = useCallback((html) => {
     // save html to content ref;
     console.log("CHANGE DETECTED");
     console.log("content set", html.length, typeof html);
@@ -112,56 +106,40 @@ export function Example(props: {
   }, []);
 
   // theme change to editor color
-  let themeChange = useCallback(({ colorScheme }) => {
-    setTheme(colorScheme);
+  const themeChange = useCallback(({ colorScheme }) => {
+    changeTheme(colorScheme);
   }, []);
 
-  let onTheme = useCallback(() => {
-    setTheme(theme === "light" ? "dark" : "light");
-  }, [theme]);
+  const onKeyHide = useCallback(() => {}, []);
 
-  let onDisabled = useCallback(() => {
-    setDisable(!disabled);
-  }, [disabled]);
-
-  let editorInitializedCallback = useCallback(() => {
-    /*richText.current &&
-      // @ts-ignore
-      richText.current?.registerToolbar(function (items) {
-        // console.log('Toolbar click, selected items (insert end callback):', items);
-      });*/
-  }, []);
-
-  let onKeyHide = useCallback(() => {}, []);
-
-  let onKeyShow = useCallback(() => {
+  const onKeyShow = useCallback(() => {
     TextInput.State.currentlyFocusedInput() && setEmojiVisible(false);
   }, []);
 
   // editor height change
-  let handleHeightChange = useCallback((height) => {
+  const handleHeightChange = useCallback((height) => {
     console.log("editor height change:", height);
   }, []);
 
-  let handleInsertEmoji = useCallback((emoji) => {
+  const handleInsertEmoji = useCallback((emoji) => {
     richText.current?.insertText(emoji);
     richText.current?.blurContentEditor();
   }, []);
 
-  let handleEmoji = useCallback(() => {
+  const handleEmoji = useCallback(() => {
     Keyboard.dismiss();
     richText.current?.blurContentEditor();
     setEmojiVisible(!emojiVisible);
   }, [emojiVisible]);
 
-  let handleInsertVideo = useCallback(() => {
+  const handleInsertVideo = useCallback(() => {
     richText.current?.insertVideo(
       "https://mdn.github.io/learning-area/html/multimedia-and-embedding/video-and-audio-content/rabbit320.mp4",
       "width: 50%;"
     );
   }, []);
 
-  let handleInsertHTML = useCallback(() => {
+  const handleInsertHTML = useCallback(() => {
     // this.richText.current?.insertHTML(
     //     `<span onclick="alert(2)" style="color: blue; padding:0 10px;" contenteditable="false">HTML</span>`,
     // );
@@ -172,7 +150,7 @@ export function Example(props: {
     );
   }, []);
 
-  let onPressAddImage = useCallback(() => {
+  const onPressAddImage = useCallback(() => {
     // insert URL
     richText.current?.insertImage(
       "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a7/React-icon.svg/100px-React-icon.svg.png",
@@ -182,49 +160,44 @@ export function Example(props: {
     // this.richText.current?.insertImage(`data:${image.mime};base64,${image.data}`);
   }, []);
 
-  let onInsertLink = useCallback(() => {
+  const onInsertLink = useCallback(() => {
     // this.richText.current?.insertLink('Google', 'http://google.com');
     linkModal.current?.setModalVisible(true);
   }, []);
 
-  let onLinkDone = useCallback(({ title, url }) => {
-    richText.current?.insertLink(title, url);
-  }, []);
-
-  let handleFontSize = useCallback(() => {
+  const handleFontSize = useCallback(() => {
     // 1=  10px, 2 = 13px, 3 = 16px, 4 = 18px, 5 = 24px, 6 = 32px, 7 = 48px;
-    let size = [1, 2, 3, 4, 5, 6, 7];
+    const size = [1, 2, 3, 4, 5, 6, 7];
     richText.current?.setFontSize(size[XMath.random(size.length - 1)]);
   }, []);
 
-  let handleForeColor = useCallback(() => {
+  const handleForeColor = useCallback(() => {
     richText.current?.setForeColor("blue");
   }, []);
 
-  let handleHiliteColor = useCallback(() => {
+  const handleHiliteColor = useCallback(() => {
     richText.current?.setHiliteColor("red");
   }, []);
 
-  let handlePaste = useCallback((data) => {
+  const handlePaste = useCallback((data) => {
     console.log("Paste:", data);
   }, []);
 
   // @deprecated Android keyCode 229
-  let handleKeyUp = useCallback((data) => {
+  const handleKeyUp = useCallback((data) => {
     // console.log('KeyUp:', data);
   }, []);
 
   // @deprecated Android keyCode 229
-  let handleKeyDown = useCallback((data) => {
+  const handleKeyDown = useCallback((data) => {
     // console.log('KeyDown:', data);
   }, []);
 
-  let handleInput = useCallback(({ data, inputType }) => {
+  const handleInput = useCallback(({ data, inputType }) => {
     // console.log(inputType, data)
   }, []);
 
-  let handleMessage = useCallback(({ type, id, data }) => {
-    let index = 0;
+  const handleMessage = useCallback(({ type, id, data }) => {
     switch (type) {
       case "ImgClick":
         richText.current?.commandDOM(
@@ -245,54 +218,25 @@ export function Example(props: {
     console.log("onMessage", type, id, data);
   }, []);
 
-  let handleFocus = useCallback(() => {
+  const handleFocus = useCallback(() => {
     console.log("editor focus");
   }, []);
 
-  let handleBlur = useCallback(() => {
+  const handleBlur = useCallback(() => {
     console.log("editor blur");
   }, []);
 
-  let handleCursorPosition = useCallback((scrollY) => {
+  const handleCursorPosition = useCallback((scrollY) => {
     // Positioning scroll bar
     scrollRef.current.scrollTo({ y: scrollY - 30, animated: true });
   }, []);
 
-  useEffect(() => {
-    let listener = [
-      Appearance.addChangeListener(themeChange),
-      Keyboard.addListener("keyboardDidShow", onKeyShow),
-      Keyboard.addListener("keyboardDidHide", onKeyHide),
-    ];
-    return () => {
-      console.log("giving up removing listener");
-      // listener.forEach(it => {
-      //     if(it) {
-      //         it.remove();
-      //         console.log("it event type is now", it.eventType )
-      //     }
-      //     else{
-      //         console.log("it is undefined? why", it)
-      //     }
-      // });
-    };
-  }, []);
-
-  let { backgroundColor, color, placeholderColor } = contentStyle;
-  let dark = theme === "dark";
+  const dark = theme === "dark";
 
   return (
     <SafeAreaView style={[styles.container, dark && styles.darkBack]}>
       <StatusBar barStyle={!dark ? "dark-content" : "light-content"} />
-      {/*<InsertLinkModal*/}
-      {/*    placeholderColor={placeholderColor}*/}
-      {/*    color={color}*/}
-      {/*    backgroundColor={backgroundColor}*/}
-      {/*    onDone={onLinkDone}*/}
-      {/*    ref={linkModal}*/}
-      {/*/>*/}
       <View style={styles.nav}>
-        {/*<Button title={'HOME'} onPress={handleHome}/>*/}
         <Button title="Preview" onPress={handleSave} />
       </View>
       <ScrollView
@@ -302,53 +246,24 @@ export function Example(props: {
         nestedScrollEnabled={true}
         scrollEventThrottle={20}
       >
-        <View style={[styles.topVi, dark && styles.darkBack]}>
-          {/*<View style={styles.item}>*/}
-          {/*    <Text style={{color}}>To: </Text>*/}
-          {/*    <TextInput*/}
-          {/*        autoCorrect={false}*/}
-          {/*        style={[styles.input, {color}]}*/}
-          {/*        placeholderTextColor={placeholderColor}*/}
-          {/*        placeholder={'stulip@126.com'}*/}
-          {/*    />*/}
-          {/*</View>*/}
-          {/*<View style={styles.item}>*/}
-          {/*    <Text style={{color}}>Subject: </Text>*/}
-          {/*    <TextInput*/}
-          {/*        autoCorrect={false}*/}
-          {/*        style={[styles.input, {color}]}*/}
-          {/*        placeholderTextColor={placeholderColor}*/}
-          {/*        placeholder="Rich Editor Bug 😀"*/}
-          {/*    />*/}
-          {/*</View>*/}
-          {/*<View style={styles.item}>*/}
-          {/*    <Button title={theme} onPress={onTheme}/>*/}
-          {/*    <Button title={disabled ? 'enable' : 'disable'} onPress={onDisabled}/>*/}
-          {/*</View>*/}
-        </View>
         <RichToolbar
           style={[styles.richBar, dark && styles.richBarDark]}
           flatContainerStyle={styles.flatStyle}
           editor={richText}
-          disabled={disabled}
           selectedIconTint={"#2095F2"}
           disabledIconTint={"#bfbfbf"}
           onPressAddImage={onPressAddImage}
           onInsertLink={onInsertLink}
         />
         <RichEditor
-          // initialFocus={true}
-          disabled={disabled}
           editorStyle={contentStyle} // default light style
           ref={richText}
           style={styles.rich}
           useContainer={true}
           initialHeight={400}
           enterKeyHint={"done"}
-          // containerStyle={{borderRadius: 24}}
           placeholder={"please input content"}
           initialContentHTML={initHTML}
-          editorInitializedCallback={editorInitializedCallback}
           onChange={handleChange}
           onHeightChange={handleHeightChange}
           onPaste={handlePaste}
@@ -369,7 +284,6 @@ export function Example(props: {
           style={[styles.richBar, dark && styles.richBarDark]}
           flatContainerStyle={styles.flatStyle}
           editor={richText}
-          disabled={disabled}
           // iconTint={color}
           selectedIconTint={"#2095F2"}
           disabledIconTint={"#bfbfbf"}
@@ -402,7 +316,7 @@ export function Example(props: {
           ]} // default defaultActions
           iconMap={{
             insertEmoji: phizIcon,
-            [actions.foreColor]: ({ tintColor }) => (
+            [actions.foreColor]: () => (
               <Text style={[styles.tib, { color: "blue" }]}>FC</Text>
             ),
             [actions.hiliteColor]: ({ tintColor }) => (

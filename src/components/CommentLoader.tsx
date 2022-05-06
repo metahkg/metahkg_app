@@ -15,6 +15,7 @@ const CommentLoader = ({ ...props }) => {
     >
       <TextLoader style={{ width: "30%", marginTop: 10 }} />
       <TextLoader style={{ width: "100%", marginTop: 10 }} />
+      <TextLoader style={{ width: "100%", marginTop: 10 }} />
     </View>
   );
 };

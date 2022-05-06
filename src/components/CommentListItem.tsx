@@ -27,7 +27,7 @@ const CommentListItem = (props: {
   );
   const navigation = useNavigation();
 
-  let commentId = comment.id;
+  const commentId = comment.id;
 
   const css = `<style>
       video {
@@ -38,7 +38,6 @@ const CommentListItem = (props: {
       }
       img {
         max-width: 98%;
-        vertical-align: middle;
       }
       table {
         width: 100% !important;
@@ -94,13 +93,12 @@ const CommentListItem = (props: {
           max-width: 100%;
       }
       .comment-body a {
-          display: flex;
           color: #3498db;
       }
       .comment-body img,
       .comment-body i,
       .comment-body video {
-          height: 100%;
+          object-fit: contain !important;
           max-height: 400px;
       }
       .comment-body {

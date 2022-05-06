@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { Alert, TouchableOpacity } from "react-native";
 import { useTheme } from "@react-navigation/native";
 import { Send } from "./icons";
-import { Example } from "./TextEditorArea/TextEditor";
+import { TextEditor } from "./TextEditorArea/TextEditor";
 import { ThemeContext } from "../context/themeSwichContext";
 import Recaptcha, { RecaptchaHandles } from "react-native-recaptcha-that-works";
 import { api } from "../utils/fetcher";
@@ -75,8 +75,7 @@ const CommentReply = (props: { navigation: any; route: any }) => {
 
   return (
     <React.Fragment>
-      <Example
-        theme={theme}
+      <TextEditor
         navigation={navigation}
         onChange={(comment) => {
           setComment(comment);
