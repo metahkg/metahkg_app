@@ -2,9 +2,10 @@ import React from "react";
 // import AsyncStorage from '@react-native-community/async-storage'
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { userType } from "../types/user";
+import { User } from "@metahkg/api";
 const AuthContext = React.createContext<{
   authState: {
-    userInfo: userType | null;
+    userInfo: User | null;
     token: string | null;
     expiresAt: number | null;
   };

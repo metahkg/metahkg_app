@@ -1,10 +1,5 @@
 import React from "react";
-import {
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useNavigation, useTheme } from "@react-navigation/native";
 import moment from "moment";
@@ -13,17 +8,17 @@ import { AuthContext } from "../context/authContext";
 
 import { ArrowDown, ArrowUp, MessageSquare, Trash } from "./icons/index";
 import { customTheme } from "../constants/default-theme";
-import { userType } from "../types/user";
 import { useCategories } from "../context/contentChangeContext";
+import { User } from "@metahkg/api";
 
 const Post = (props: {
   postId: number;
   score: number;
   title: string;
-  author: userType;
+  author: User;
   category: number;
   comments: number;
-  created: string;
+  created: Date;
   postType?: string;
   deleteButton?: any;
   deletePost?: any;
@@ -58,14 +53,18 @@ const Post = (props: {
               styles.italicFont,
               { color: author.sex === "M" ? colors.blue : colors.red },
             ]}
-            onPress={() =>
-              navigation.navigate("User", { username: author.name })
-            }
+            onPress={() => {
+              navigation.navigate(
+                "User" as never,
+                { username: author.name } as never
+              );
+            }}
           >
-            {author?.name} 
+            {author?.name}
           </Text>
           <Text style={[styles.dateText, { color: colors.text }]}>
-            {" "}·{" "}{moment(created).fromNow()}
+            {" "}
+            · {moment(created).fromNow()}
             {"  "}
           </Text>
         </View>
@@ -108,7 +107,12 @@ const Post = (props: {
       <Text
         style={[styles.title, { color: colors.text }]}
         onPress={() =>
-          navigation.navigate("PostDetail", { postId, category, comments, title })
+          navigation.navigate("PostDetail" as never, {
+            postId,
+            category,
+            comments,
+            title,
+          } as never)
         }
       >
         {title}
@@ -130,7 +134,12 @@ const Post = (props: {
           style={styles.centerAlign}
           activeOpacity={0.7}
           onPress={() =>
-            navigation.navigate("PostDetail", { postId, category, comments, title })
+            navigation.navigate("PostDetail" as never, {
+              postId,
+              category,
+              comments,
+              title,
+            } as never)
           }
         >
           <MessageSquare

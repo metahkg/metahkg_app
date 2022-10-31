@@ -1,6 +1,7 @@
+import { Category } from "@metahkg/api";
 import React, { useContext, useEffect } from "react";
 import { categoryType } from "../types/category";
-import { api } from "../utils/fetcher";
+import { api } from "../utils/api";
 
 const ContentContext = React.createContext<{
   categories: categoryType[];
@@ -10,12 +11,12 @@ const { Provider } = ContentContext;
 
 const ContentProvider = (props: { children: JSX.Element | JSX.Element[] }) => {
   const { children } = props;
-  const [categories, setCategories] = React.useState([]);
+  const [categories, setCategories] = React.useState<Category[]>([]);
   useEffect(() => {
     api
-      .get("/category/all")
-      .then((response) => {
-        setCategories(response.data);
+      .categories()
+      .then((data) => {
+        setCategories(data);
       })
       .catch((error) => {
         console.log(error);

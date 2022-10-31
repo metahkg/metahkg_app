@@ -13,7 +13,7 @@ import * as Animatable from "react-native-animatable";
 import { LinearGradient } from "expo-linear-gradient";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import Feather from "react-native-vector-icons/Feather";
-import { api } from "../../../utils/fetcher";
+import { api } from "../../../utils/api";
 import { AuthContext } from "../../../context/authContext";
 import Recaptcha, { RecaptchaHandles } from "react-native-recaptcha-that-works";
 import jwtDecode from "jwt-decode";
@@ -28,18 +28,28 @@ import { ThemeContext } from "../../../context/themeSwichContext";
 import { styles } from "./styles/signup.styles";
 import { Type } from "@sinclair/typebox";
 import { ajv } from "../../../utils/ajv";
+import { UserSex } from "@metahkg/api";
 
 const SignInScreen = (props: { navigation: any }) => {
   const { navigation } = props;
   const { setStorage } = useContext(AuthContext);
   const { colors } = useTheme() as customTheme;
   const { theme } = useContext(ThemeContext);
-  const [state, setState] = useState({
+  const [state, setState] = useState<{
+    username: string;
+    password: string;
+    email: string;
+    rtoken: string;
+    sex: UserSex | null,
+    check_usernameChange: boolean;
+    check_emailChange: boolean;
+    secureTextEntry: boolean;
+  }>({
     username: "",
     password: "",
     email: "",
     rtoken: "",
-    sex: "",
+    sex: null,
     check_usernameChange: false,
     check_emailChange: false,
     secureTextEntry: true,
@@ -54,8 +64,9 @@ const SignInScreen = (props: { navigation: any }) => {
       setSignup(false);
       setLoading(true);
       const { username, password, email, rtoken, sex } = state;
+      if (!sex) return;
       api
-        .post("/users/register", {
+        .usersRegister({
           name: username,
           pwd: hash.sha256().update(password).digest("hex"),
           email,
@@ -79,13 +90,13 @@ const SignInScreen = (props: { navigation: any }) => {
                 onPress: () => {
                   setLoading(true);
                   api
-                    .post("/users/signin", {
+                    .usersLogin({
                       name: username,
                       pwd: hash.sha256().update(password).digest("hex"),
                     })
-                    .then((res) => {
+                    .then((data) => {
                       setLoading(false);
-                      const { token } = res.data;
+                      const { token } = data;
                       const decoded = jwtDecode(token) as jwtTokenType;
                       if (decoded) setStorage(token, decoded?.exp, decoded);
                       else

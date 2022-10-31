@@ -5,7 +5,7 @@ import { Send } from "./icons";
 import { TextEditor } from "./TextEditorArea/TextEditor";
 import { ThemeContext } from "../context/themeSwichContext";
 import Recaptcha, { RecaptchaHandles } from "react-native-recaptcha-that-works";
-import { api } from "../utils/fetcher";
+import { api } from "../utils/api";
 
 const CommentReply = (props: { navigation: any; route: any }) => {
   const { navigation, route } = props;
@@ -18,10 +18,9 @@ const CommentReply = (props: { navigation: any; route: any }) => {
   useEffect(() => {
     if (createComment && rtoken) {
       api
-        .post(`/posts/comment`, {
+        .commentCreate(route.params.postId,{
           comment,
           rtoken,
-          id: route.params.postId,
         })
         .then(() => {
           navigation.goBack();

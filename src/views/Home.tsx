@@ -1,9 +1,9 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { FlatList, StatusBar, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useTheme } from "@react-navigation/native";
 
-import { api } from "../utils/fetcher";
+import { api } from "../utils/api";
 import { AuthContext } from "../context/authContext";
 import { ThemeContext } from "../context/themeSwichContext";
 
@@ -12,25 +12,25 @@ import Post from "../components/Post";
 import PostLoader from "../components/PostLoader";
 import CategoryLoader from "../components/CategoryLoader";
 import { customTheme } from "../constants/default-theme";
-import { summaryType } from "../types/post";
+import { ThreadMeta } from "@metahkg/api";
 
 const Home = () => {
   const { authState } = React.useContext(AuthContext);
   const { theme } = React.useContext(ThemeContext);
   const { colors } = useTheme() as customTheme;
 
-  const [postData, setPostData] = React.useState<summaryType[] | null>(null);
+  const [postData, setPostData] = React.useState<ThreadMeta[] | null>(null);
   const [category, setCategory] = React.useState(1);
   const [isLoading, setIsLoading] = React.useState(false);
 
   const getPostData = React.useCallback(async () => {
     setIsLoading(true);
-    const { data } = await api.get(`menu/${Number(category) || 1}`);
+    const data = await api.categoryThreads(Number(category) || 1)
     setPostData(data);
     setIsLoading(false);
   }, [category]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     getPostData();
   }, [getPostData]);
 
@@ -63,11 +63,11 @@ const Home = () => {
           renderItem={({ item }) => (
             <Post
               postId={item.id}
-              score={item.vote}
+              score={item.score}
               title={item.title}
               author={item.op}
               category={item.category}
-              comments={item.c}
+              comments={item.count}
               created={item.lastModified}
               deleteButton={false}
             />

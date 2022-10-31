@@ -5,9 +5,6 @@ import { Button, StyleSheet, View, SafeAreaView } from "react-native";
 import { WebView } from "react-native-webview";
 import { customTheme } from "../../constants/default-theme";
 
-type Props = any;
-type State = any;
-
 export function Preview(props: { route: any }) {
   const { colors } = useTheme() as customTheme;
   const css = `<style>

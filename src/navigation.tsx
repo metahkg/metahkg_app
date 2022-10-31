@@ -35,7 +35,7 @@ const SettingStack = createStackNavigator();
 
 function SignScreens() {
   return (
-    <RootStack.Navigator headerMode="none">
+    <RootStack.Navigator>
       <RootStack.Screen name="SplashScreen" component={SplashScreen} />
       <RootStack.Screen name="SignInScreen" component={SignInScreen} />
       <RootStack.Screen name="SignUpScreen" component={SignUpScreen} />
@@ -76,7 +76,7 @@ function HomeScreens(props: { navigation: any }) {
         name="PostDetail"
         component={PostDetail}
         options={(props: { route: any }) => {
-          const { route } = props;
+          const { route } = props
           return {
             headerShown: true,
             headerTitle: route.params.title,
@@ -166,7 +166,7 @@ function MyTabs() {
     <Drawer.Navigator drawerContent={(props) => <DrawerContent {...props} />}>
       <Drawer.Screen name="Home" component={HomeScreens} />
       <Drawer.Screen name="CreatePost" component={CreatePostScreen} />
-      <Drawer.Screen name="User" component={UserScreen} />
+      <Drawer.Screen name="User" component={UserScreen as any} />
       <Drawer.Screen name="Setting" component={SettingScreens} />
     </Drawer.Navigator>
   );

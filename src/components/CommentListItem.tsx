@@ -5,25 +5,31 @@ import moment from "moment";
 
 import { ArrowDown, ArrowUp, MessageSquare } from "./icons";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { api } from "../utils/fetcher";
+import { api } from "../utils/api";
 import AutoHeightWebView from "react-native-autoheight-webview";
 import { customTheme } from "../constants/default-theme";
 import { commentType, threadType, voteType } from "../types/post";
 import { ThemeContext } from "../context/themeSwichContext";
+import { Comment, Thread, Vote } from "@metahkg/api";
 
 const CommentListItem = (props: {
-  userVotes: { [id: number]: voteType };
-  comment: commentType;
-  thread: threadType;
+  userVotes: {
+    cid: number;
+    vote: Vote;
+  }[];
+  comment: Comment;
+  thread: Thread;
 }) => {
   const { comment, userVotes, thread } = props;
   const { colors } = useTheme() as customTheme;
   const { theme } = useContext(ThemeContext);
   const [upVotes, setUpVotes] = useState(comment.U || 0);
   const [downVotes, setDownVotes] = useState(comment.D || 0);
-  const [isUpVoted, setisUpVoted] = useState(userVotes?.[comment.id] === "U");
+  const [isUpVoted, setisUpVoted] = useState(
+    userVotes?.find((item) => item.cid === comment.id)?.vote === "U"
+  );
   const [isDownVoted, setisDownVoted] = useState(
-    userVotes?.[comment.id] === "D"
+    userVotes?.find((item) => item.cid === comment.id)?.vote === "D"
   );
   const navigation = useNavigation();
 
@@ -158,11 +164,7 @@ const CommentListItem = (props: {
 
   const vote = (vote: "U" | "D") => {
     api
-      .post(`/posts/vote`, {
-        id: thread.id,
-        cid: commentId,
-        vote,
-      })
+      .commentVote({ vote }, thread.id, commentId)
       .then(() => {
         if (vote === "U") {
           setisUpVoted(true);
@@ -216,7 +218,7 @@ const CommentListItem = (props: {
               { color: comment.user.sex === "M" ? colors.blue : colors.red },
             ]}
             onPress={() =>
-              navigation.navigate("User", { username: comment.user?.name })
+              navigation.navigate("User" as never, { name: comment.user?.name, id: comment.user?.id } as never)
             }
           >
             {comment.user?.name}
@@ -295,10 +297,10 @@ const CommentListItem = (props: {
         </TouchableOpacity>
         <TouchableOpacity
           onPress={() =>
-            navigation.navigate("CommentReply", {
+            navigation.navigate("CommentReply" as never, {
               postId: thread.id,
               commentId: commentId,
-            })
+            } as never)
           }
         >
           <Text style={[styles.italicFont, { color: colors.text }]}>
@@ -313,8 +315,7 @@ const CommentListItem = (props: {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingHorizontal: 15,
-    paddingVertical: 7,
+    paddingHorizontal: 10,
     marginBottom: 7,
     elevation: 1,
     borderWidth: 1,

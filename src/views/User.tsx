@@ -9,7 +9,6 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useNavigation, useTheme } from "@react-navigation/native";
 
-import axios from "../utils/fetcher";
 import { AuthContext } from "../context/authContext";
 import { ThemeContext } from "../context/themeSwichContext";
 
@@ -17,7 +16,9 @@ import { LogOut, Moon, Sun } from "../components/icons";
 import Post from "../components/Post";
 import PostLoader from "../components/PostLoader";
 import { customTheme } from "../constants/default-theme";
-import { postType } from "../types/post";
+import { NavigationProps } from "../types/navigation";
+import type { Thread, ThreadMeta, User } from "@metahkg/api";
+import { api } from "../utils/api";
 
 const HeaderComponent = (props: { username: string; postCount: number }) => {
   const { username, postCount } = props;
@@ -25,20 +26,20 @@ const HeaderComponent = (props: { username: string; postCount: number }) => {
   const { theme, changeTheme } = React.useContext(ThemeContext);
   const { colors } = useTheme() as customTheme;
   const navigation = useNavigation();
-  console.log("username", username, "authstate", authState.userInfo.username);
+  console.log("username", username, "authstate", authState.userInfo?.name);
   return (
     <View style={[styles.userInfo, { backgroundColor: colors.bgColor }]}>
       <View style={styles.infoBox}>
         <Text style={[styles.label, { color: colors.text }]}>Username</Text>
         <Text style={{ color: colors.text }}>
-          {username ?? authState.userInfo.username}
+          {username ?? authState.userInfo?.name}
         </Text>
       </View>
       <View style={styles.infoBox}>
         <Text style={[styles.label, { color: colors.text }]}>Post Count</Text>
         <Text style={{ color: colors.text }}>{postCount}</Text>
       </View>
-      {username === authState.userInfo.username && (
+      {username === authState.userInfo?.name && (
         <>
           <View style={[styles.line, { borderColor: colors.border }]} />
           <TouchableOpacity
@@ -58,7 +59,7 @@ const HeaderComponent = (props: { username: string; postCount: number }) => {
             style={styles.infoBox}
             onPress={() => {
               signOut();
-              navigation.navigate("Home");
+              navigation.navigate("Home" as never);
             }}
           >
             <LogOut color={colors.red} />
@@ -70,32 +71,36 @@ const HeaderComponent = (props: { username: string; postCount: number }) => {
   );
 };
 
-const User = (props: { route: any, otherProps: any[] }) => {
-  const { route, otherProps } = props;
+const UserThreads = (props: any) => {
+  const { route, navigation } = props;
   const { authState } = React.useContext(AuthContext);
   const { colors } = useTheme();
-  console.log("ggg", otherProps);
+  console.log("ggg", navigation);
   const [isLoading, setIsLoading] = React.useState(false);
-  const [userPosts, setuserPosts] = React.useState<postType[] | null>(null);
+  const [userPosts, setuserPosts] = React.useState<ThreadMeta[] | null>(null);
 
-  const username = route.params?.username;
+  if (!route.params) {
+    if (!authState.userInfo) {
+      return <View />;
+    }
+  }
+
+  const { id, name } = (route.params || authState.userInfo) as User;
 
   const getUserPostDetail = React.useCallback(async () => {
     setIsLoading(true);
-    const { data } = await axios.get(
-      `user/${username || authState.userInfo.username}`
-    );
+    const data = await api.userThreads(id, "created");
     setuserPosts(data);
     setIsLoading(false);
-  }, [authState.userInfo.username, username]);
+  }, [authState.userInfo?.name, name]);
 
   React.useEffect(() => {
     getUserPostDetail();
   }, [getUserPostDetail]);
 
-  const deletePost = async (postId: number, index: number) => {
+  /* const deletePost = async (postId: number, index: number) => {
     setIsLoading(true);
-    const { status } = await axios.delete(`post/${postId}`);
+    const { status } = await api.delete(`post/${postId}`);
     if (status === 200) {
       setuserPosts((prevData) => {
         prevData?.splice(index, 1);
@@ -103,13 +108,13 @@ const User = (props: { route: any, otherProps: any[] }) => {
       });
     }
     setIsLoading(false);
-  };
+  };*/
 
   return (
     <SafeAreaView style={styles.boxCenter}>
       {userPosts ? (
         <FlatList
-          data={userPosts.sort((a, b) => a.created - b.created)}
+          data={userPosts}
           extraData={isLoading}
           refreshing={isLoading}
           onRefresh={() => getUserPostDetail()}
@@ -120,30 +125,24 @@ const User = (props: { route: any, otherProps: any[] }) => {
             </Text>
           }
           ListHeaderComponent={
-            <HeaderComponent username={username} postCount={userPosts.length} />
+            <HeaderComponent
+              username={name || ""}
+              postCount={userPosts.length}
+            />
           }
           stickyHeaderIndices={[0]}
           ListHeaderComponentStyle={styles.headerComponentStyle}
           renderItem={({ item, index }) => (
             <Post
               postId={item.id}
-              userId={authState.userInfo.id}
               score={item.score}
-              type={item.type}
               title={item.title}
-              author={item.author}
+              author={item.op}
               category={item.category}
-              text={item.text}
-              comments={item.comments}
-              created={item.created}
-              url={item.url}
-              votes={item.votes}
-              views={item.views}
-              setIsLoading={setIsLoading}
+              comments={item.count}
+              created={item.createdAt}
               // TODO: originally this was setUserPosts, but it was as array thus incompatible with postType
-              setData={item.setData}
               deleteButton={true}
-              deletePost={() => deletePost(item.id, index)}
             />
           )}
         />
@@ -198,4 +197,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default User;
+export default UserThreads;

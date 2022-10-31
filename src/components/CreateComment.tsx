@@ -17,7 +17,7 @@ import { customTheme } from "../constants/default-theme";
 import { useTheme } from "@react-navigation/native";
 import Recaptcha, { RecaptchaHandles } from "react-native-recaptcha-that-works";
 import { ThemeContext } from "../context/themeSwichContext";
-import { api } from "../utils/fetcher";
+import { api } from "../utils/api";
 
 const CreateComment = (props: {
   postId: number;
@@ -35,8 +35,7 @@ const CreateComment = (props: {
   useEffect(() => {
     if (comment && createComment && rtoken) {
       api
-        .post(`/posts/comment`, {
-          id: postId,
+        .commentCreate(postId, {
           comment: `<p>${comment}</p>`,
           rtoken,
         })

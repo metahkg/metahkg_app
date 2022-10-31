@@ -15,7 +15,7 @@ import Feather from "react-native-vector-icons/Feather";
 import hash from "hash.js";
 import { useTheme } from "@react-navigation/native";
 import jwtDecode from "jwt-decode";
-import { api } from "../../../utils/fetcher";
+import { api } from "../../../utils/api";
 import { AuthContext } from "../../../context/authContext";
 import { jwtTokenType } from "../../../types/user";
 import MetahkgLogo from "../../../components/Metahkglogo";
@@ -78,38 +78,35 @@ const SignInScreen = (props: { navigation: any }) => {
       name: userName,
       pwd: hash.sha256().update(password).digest("hex"),
     };
-    const schema = Type.Object({
+    /*const schema = Type.Object({
       name: Type.RegEx(/^\S{1,15}$/),
       pwd: Type.RegEx(/^[a-f0-9]{64}$/i),
-    });
-    if (!ajv.validate(schema, values))
+    });*/
+    /*if (!ajv.validate(schema, values))
       return Alert.alert(
         "Error",
         `Your username or password is invalid:
 - Username must be between 1 and 15 characters`
-      );
-
+      );*/
     setLoading(true);
     api
-      .post("/users/signin", values)
-      .then((res) => {
+      .usersLogin(values)
+      .then((data) => {
         setLoading(false);
-        if (res.data.unverified)
-          return Alert.alert("Please verify your email first.");
-
-        const { token } = res.data;
+        const { token } = data;
         const decoded = jwtDecode(token) as jwtTokenType;
         const expiresAt = decoded?.exp;
         const userInfo = decoded;
         setStorage(token, expiresAt, userInfo);
       })
       .catch((error) => {
+        console.log(error);
+        if (error?.error?.includes?.("email"))
+          return Alert.alert("Please verify your email first.");
         setLoading(false);
         Alert.alert(
           "Error",
-          error.response?.data?.error ||
-            error.response?.data ||
-            "Something went wrong. Please try again later."
+          typeof error?.error === "string" ? error?.error : "Something went wrong. Please try again later."
         );
       });
   };

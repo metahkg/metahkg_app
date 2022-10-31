@@ -11,7 +11,7 @@ import {
 } from "react-native";
 import { useTheme } from "@react-navigation/native";
 
-import axios from "../utils/fetcher";
+import { api } from "../utils/api";
 import { Formik } from "formik";
 import * as Yup from "yup";
 
@@ -86,16 +86,15 @@ const CreatePost = () => {
     >
       <Formik
         initialValues={{
-          type: "text",
+          title: "text",
           category: 1,
-          title: "",
-          url: "",
-          text: "",
+          comment: "",
+          rtoken: "",
         }}
         onSubmit={async (values, { setStatus, resetForm }) => {
           setIsLoading(true);
           try {
-            await axios.post("posts", values);
+            await api.threadCreate(values);
             // @ts-ignore
             resetForm({ ...values, type: "text" });
             setMessage("Successfully Created!");
@@ -149,11 +148,11 @@ const CreatePost = () => {
               <Text style={[styles.formLabel, { color: colors.text }]}>
                 Type
               </Text>
-              {touched.type && errors.type && (
+              {/**{touched.type && errors.type && (
                 <Text style={styles.errorMessage}>{errors.type}</Text>
-              )}
+              )}**/}
             </View>
-            <TypeSwichContainer>
+            {/**<TypeSwichContainer>
               <TypeSwichButton
                 selected={values.type}
                 onClick={setFieldValue}
@@ -164,7 +163,7 @@ const CreatePost = () => {
                 onClick={setFieldValue}
                 type="link"
               />
-            </TypeSwichContainer>
+            </TypeSwichContainer>**/}
             <View style={styles.flexRow}>
               <Text style={[styles.formLabel, { color: colors.text }]}>
                 Category
@@ -199,7 +198,7 @@ const CreatePost = () => {
               onBlur={handleBlur("title")}
             />
 
-            {values.type === "link" ? (
+            {/** {values.type === "link" ? (
               <>
                 <View style={styles.flexRow}>
                   <Text style={[styles.formLabel, { color: colors.text }]}>
@@ -223,31 +222,31 @@ const CreatePost = () => {
                   onBlur={handleBlur("url")}
                 />
               </>
-            ) : (
+                ) : **/}(
               <>
                 <View style={styles.flexRow}>
                   <Text style={[styles.formLabel, { color: colors.text }]}>
                     Text
                   </Text>
-                  {touched.text && errors.text && (
+                  {/**{touched.text && errors.text && (
                     <Text style={styles.errorMessage}>{errors.text}</Text>
-                  )}
+                  )}**/}
                 </View>
                 <TextInput
                   style={[
                     styles.textInput,
                     { borderColor: colors.border, color: colors.text },
-                    Boolean(touched.text && errors.text) && {
-                      borderColor: colors.red,
-                    },
+                    //Boolean(touched.text && errors.text) && {
+                      //borderColor: colors.red,
+                    //},
                   ]}
                   multiline
-                  value={values.text}
+                  value={values.comment}
                   onChangeText={handleChange("text")}
                   onBlur={handleBlur("text")}
                 />
               </>
-            )}
+            )
             <View style={styles.buttonContainer}>
               <TouchableOpacity
                 style={[styles.submitButton, { backgroundColor: colors.blue }]}
